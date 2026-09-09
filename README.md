@@ -44,43 +44,84 @@ Detailed statistical distributions, token frequency tables, and problem signatur
 
 ---
 
+## Phase 2 Deliverables & Benchmark Results
+
+### 1. Intent Taxonomy Validation & Refinement
+In Phase 2, we empirically validated `general_inquiry_other` and found:
+- Device freezing, crashing, and bootloops accounted for 17.2% of "other" queries &rarr; established `performance_freeze_crash` as a distinct intent.
+- iOS 11 predictive text bug (letter 'i') accounted for 8.9% &rarr; re-routed into `display_touch_keyboard`.
+- Taxonomy stabilized at **11 core technical intents + 1 calibrated fallback** (`general_inquiry_other`).
+
+### 2. Golden Evaluation Set (200 Examples)
+- Stratified 200 real examples across all 12 intents with difficulty ratings (Straightforward: 44%, Ambiguous: 44.5%, Edge Case: 11.5%).
+- Ground-truth expected action: 136 `AUTO_HANDLE` (68.0%) vs 64 `ESCALATE` (32.0%).
+- Isolated strictly into `data/golden_eval/golden_eval_200.jsonl` with 0 ID leakage into the 800-thread training corpus (`data/training/train_pool_800.jsonl`).
+
+### 3. Real Benchmark Results (Golden 200)
+
+| System Component | Metric | Baseline / Score |
+| :--- | :--- | :--- |
+| **Majority-Class Baseline** | Accuracy / Macro F1 | 8.50% / 1.31% |
+| **TF-IDF + Logistic Regression** | Accuracy / Macro F1 | **64.00%** / **63.97%** |
+| **TF-IDF + Logistic Regression** | Weighted F1 / Latency | **64.09%** / 0.06 ms/query |
+| **Historical Support Retriever** | Mean Top-1 Cosine Sim | 0.236 (800 indexed cases) |
+| **SupportPilot Agent Escalation** | Accuracy / F1 | **76.50%** / **68.03%** |
+| **SupportPilot Agent Escalation** | Precision / Recall | **60.24%** / **78.12%** |
+
+---
+
 ## Project Structure
 
 ```
 SupportPilot AI/
 ├── .gitignore                      # Strictly excludes raw 500MB+ dataset & caches
-├── requirements.txt                # Lightweight, well-known dependencies
-├── README.md                       # Project documentation & architecture overview
+├── requirements.txt                # Core dependencies: scikit-learn, pandas, torch, etc.
+├── README.md                       # Comprehensive system documentation
 ├── data/
 │   ├── sample/
 │   │   ├── applesupport_sample_1000.jsonl  # 1,000 reproducible conversation threads
-│   │   └── applesupport_sample_1000.csv    # Tabular export for quick inspection
-│   └── golden_eval/
-│       └── golden_eval_200.jsonl           # 150-250 verified examples (Phase 2)
+│   │   └── applesupport_sample_1000.csv    # Tabular sample export
+│   ├── golden_eval/
+│   │   ├── golden_eval_200.jsonl           # 200 stratified golden test examples
+│   │   └── golden_eval_200.csv             # Tabular golden evaluation set
+│   └── training/
+│       └── train_pool_800.jsonl            # 800 isolated training/retrieval threads
+├── models/
+│   ├── tfidf_lr_intent_model.joblib        # Trained intent classifier
+│   └── historical_retriever.joblib         # Historical support retrieval index
 ├── src/
-│   ├── __init__.py
 │   ├── data/
-│   │   ├── __init__.py
-│   │   ├── extract_applesupport.py         # Memory-efficient streaming from ZIP/CSV
-│   │   ├── thread_reconstructor.py         # Rebuilds parent-child dialogue trees
-│   │   └── build_sample_and_report.py      # Generates sample & statistical report
+│   │   ├── extract_applesupport.py         # Streaming raw ZIP extractor
+│   │   ├── thread_reconstructor.py         # Multi-turn conversation reconstructor
+│   │   └── create_golden_eval.py           # Stratified evaluation set builder
 │   ├── analysis/
-│   │   ├── __init__.py
-│   │   └── eda_analysis.py                 # Token frequencies, distributions, taxonomy
-│   ├── models/                             # (Phase 2: Baselines, RAG, & Agent)
-│   │   ├── baseline_majority.py
-│   │   ├── baseline_tfidf_lr.py
-│   │   ├── intent_classifier.py
-│   │   ├── retriever.py
-│   │   └── agent.py
-│   └── evaluation/                         # (Phase 2: Evaluation Harness)
-│       ├── metrics.py
-│       ├── llm_judge.py
-│       └── run_eval.py
+│   │   └── eda_analysis.py                 # Intent taxonomy rules and statistical metrics
+│   ├── models/
+│   │   ├── baseline_majority.py            # Majority-class benchmark
+│   │   ├── baseline_tfidf_lr.py            # TF-IDF + Logistic Regression baseline
+│   │   ├── retriever.py                    # Historical support retrieval engine
+│   │   └── agent.py                        # SupportPilotAgent decision & drafting pipeline
+│   └── evaluation/
+│       └── evaluate_pipeline.py            # Automated evaluation harness
 ├── reports/
-│   └── phase1_applesupport_eda.md          # Full EDA & taxonomy analysis report
+│   ├── phase1_applesupport_eda.md          # Comprehensive Phase 1 EDA report
+│   ├── phase2_baseline_and_golden_eval.md  # Complete Phase 2 benchmark report
+│   └── phase2_metrics.json                 # Machine-readable evaluation metrics
 └── tests/
-    └── test_data_pipeline.py               # Automated unit tests for data extraction & parsing
+    ├── test_data_pipeline.py               # Data pipeline & thread reconstruction tests
+    └── test_baselines_and_agent.py         # Baselines, retriever, and agent tests
+```
+
+---
+
+## Running Evaluation & Tests
+
+```bash
+# Run all automated unit and integration tests
+python -m pytest tests/ -v
+
+# Run the full Phase 2 evaluation harness
+python -m src.evaluation.evaluate_pipeline
 ```
 
 ---
