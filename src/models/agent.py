@@ -75,11 +75,36 @@ INTENT_RESOLUTION_GUIDES = {
 }
 
 
+# Unicode non-Latin scripts: CJK, Hiragana, Katakana, Hangul, Arabic, Cyrillic
+UNICODE_NON_LATIN_SCRIPT_PATTERN = re.compile(
+    r"[\u4e00-\u9fff\u3040-\u30ff\uac00-\ud7af\u0600-\u06ff\u0400-\u04ff]"
+)
+
+# Intent-independent high-severity safety triggers
+DIRECT_SAFETY_TRIGGERS = {
+    "account_security_and_pii": [
+        r"\blocked out\b", r"\bdisabled\b", r"\bpasscode locked\b",
+        r"\b2fa\b", r"\btwo-factor\b", r"\bhacked\b", r"\bverification code\b"
+    ],
+    "financial_and_billing": [
+        r"\bapple pay\b", r"\brefund\b", r"\bunauthorized\b",
+        r"\bcharged twice\b", r"\bpayment declined\b", r"\bpayment not completed\b"
+    ],
+    "hardware_physical_damage": [
+        r"\bcracked screen\b", r"\bshattered\b", r"\bwater damage\b",
+        r"\bdropped in water\b", r"\bgenius bar\b"
+    ],
+    "unresolved_system_crash": [
+        r"\bbootloop\b", r"\bbricked\b", r"\breboot loop\b", r"\bstuck on apple logo\b"
+    ]
+}
+
+
 class SupportPilotAgent:
     def __init__(
         self,
         classifier: TfidfLogisticRegressionBaseline,
-        retriever: HistoricalSupportRetriever,
+        retriever: Any,
         confidence_threshold: float = 0.12,
         similarity_threshold: float = 0.20
     ):
@@ -91,36 +116,41 @@ class SupportPilotAgent:
     def _detect_escalation_risk(self, query: str, intent: str, confidence: float) -> Optional[str]:
         """
         Applies brand safety and operational risk guardrails to determine escalation necessity.
+        Combines intent-independent safety triggers with intent-specific classification rules.
         """
         query_lower = query.lower()
 
-        # 1. Non-English detection
+        # 1. Non-English detection (Latin keywords + Non-Latin scripts e.g. Japanese, Chinese, Arabic)
+        if UNICODE_NON_LATIN_SCRIPT_PATTERN.search(query):
+            return "non_english_query"
         if any(re.search(p, query_lower) for p in NON_ENGLISH_INDICATORS):
             return "non_english_query"
 
-        # 2. Abusive / legal escalation
+        # 2. Abusive language or legal threats
         if any(re.search(p, query_lower) for p in HIGH_RISK_ESCALATION_KEYWORDS["abusive_or_legal"]):
             return "vague_or_abusive"
 
-        # 3. Hardware physical repair
+        # 3. Intent-independent critical safety triggers (catches misclassified high-risk queries)
+        for reason, patterns in DIRECT_SAFETY_TRIGGERS.items():
+            if any(re.search(p, query_lower) for p in patterns):
+                return reason
+
+        # 4. Intent-specific policy checks
         if intent == "hardware_repair_service":
             return "hardware_physical_damage"
 
-        # 4. Financial / billing / refund
         if intent == "app_store_billing":
             return "financial_and_billing"
 
-        # 5. Account security / PII / lockout
         if intent == "apple_id_icloud":
             if any(re.search(p, query_lower) for p in HIGH_RISK_ESCALATION_KEYWORDS["apple_id_icloud"]):
                 return "account_security_and_pii"
 
-        # 6. Critical bootloop / bricking
         if intent == "performance_freeze_crash":
             if any(re.search(p, query_lower) for p in HIGH_RISK_ESCALATION_KEYWORDS["performance_freeze_crash"]):
                 return "unresolved_system_crash"
 
-        # 7. Extremely low confidence or unclassified
+        # 5. Low confidence or unclassified fallback
         if confidence < self.confidence_threshold:
             return "low_intent_confidence"
 

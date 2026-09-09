@@ -1,0 +1,43 @@
+Total False Negatives (Missed Escalations): 14
+
+ 1. [GOLDEN_002] Gold: app_store_billing (financial_and_billing) | Pred: display_touch_keyboard (conf=0.22)
+    Query: 'Ever since I upgraded to High Sierra, my media controls on the keyboard don’t work with iTunes. Please help or fix it @A'
+
+ 2. [GOLDEN_003] Gold: app_store_billing (financial_and_billing) | Pred: audio_sound (conf=0.18)
+    Query: 'Neither iPhone alarm went off this morning, had to make a 5:30 AM flight. The 2am alarm on one phone finally went off at'
+
+ 3. [GOLDEN_006] Gold: app_store_billing (financial_and_billing) | Pred: network_connectivity (conf=0.13)
+    Query: 'My Apple Watch keeps turning off and on by itself and it’s charged. What do I do?'
+
+ 4. [GOLDEN_010] Gold: app_store_billing (financial_and_billing) | Pred: apple_id_icloud (conf=0.12)
+    Query: 'how come Apple Pay isn’t working on @9891? Every time I attempt to finish it, it says “Payment not completed.”'
+
+ 5. [GOLDEN_029] Gold: apple_id_icloud (account_security_and_pii) | Pred: camera_photos (conf=0.14)
+    Query: 'locked out of my iPad. Followed instructions but it hasn’t worked. Please help. Also I want to turn this feature off'
+
+ 6. [GOLDEN_103] Gold: general_inquiry_other (vague_or_abusive) | Pred: software_update (conf=0.39)
+    Query: '11.1にあげたらTwitter少し見てるだけだし低電力モードなのに20パーへったぞ。デバイス本体ごと取り換えて数ヶ月だし今回のアプデはミスだな。バッテリー消費悪化してる。 @AppleSupport'
+
+ 7. [GOLDEN_105] Gold: general_inquiry_other (vague_or_abusive) | Pred: display_touch_keyboard (conf=0.28)
+    Query: 'what’s up with the letter “i” man? pls fix. i’m annoyed. @115858 @AppleSupport'
+
+ 8. [GOLDEN_107] Gold: general_inquiry_other (vague_or_abusive) | Pred: performance_freeze_crash (conf=0.14)
+    Query: 'WHY will my phone not stop locking itself when I’m in the middle of doing things???'
+
+ 9. [GOLDEN_108] Gold: general_inquiry_other (vague_or_abusive) | Pred: camera_photos (conf=0.14)
+    Query: 'why is my phone acting up saying im out of storage? How do I go from 60gb then delete Spotify(3gb) and end up with 59gb'
+
+10. [GOLDEN_115] Gold: general_inquiry_other (vague_or_abusive) | Pred: display_touch_keyboard (conf=0.37)
+    Query: 'hey apple ! What is going on with the iPhones ?? Every time I️ type the letter “I️” I️ get a symbol. Which you see right'
+
+11. [GOLDEN_116] Gold: general_inquiry_other (vague_or_abusive) | Pred: display_touch_keyboard (conf=0.13)
+    Query: 'the I️ keeps autocorrecting to a strange symbol'
+
+12. [GOLDEN_120] Gold: hardware_repair_service (hardware_physical_damage) | Pred: display_touch_keyboard (conf=0.25)
+    Query: 'the letter i is broken'
+
+13. [GOLDEN_125] Gold: hardware_repair_service (hardware_physical_damage) | Pred: software_update (conf=0.13)
+    Query: 'Hey @AppleSupport Messages app instantly crashes. Been running 11.1, this just started. Tried restore, worked for a sec '
+
+14. [GOLDEN_136] Gold: hardware_repair_service (hardware_physical_damage) | Pred: network_connectivity (conf=0.18)
+    Query: 'Anyone else seeing very bad/broken bluetooth experience on iPhone X? #iphoneX @AppleSupport'
