@@ -106,7 +106,7 @@ Phase 4 makes a customer-facing reply evidence-bound instead of falling back to 
 - The deterministic evaluation verifies citation integrity and unsupported-policy output. An injected `LLMReplyJudge` uses a five-dimension 1–5 rubric (groundedness, relevance, helpfulness, tone, safety); it intentionally records no score without a real judge call.
 - `human_llm_agreement` computes per-dimension Cohen's kappa after matching real human and LLM annotations by `golden_id`.
 
-Actual run on the real zero-leakage 200-example golden set: **70.50% grounded/cited replies**, **70.50% provenance match rate**, **29.50% appropriate abstentions (safely escalated)**, and **0.00% detected unsafe or context-bound output**.
+Actual run on the real zero-leakage 200-example golden set: **70.50% provenance-backed / grounded response rate** (across top-3 candidates), **50.00% top-1 retrieval relevance rate**, **29.50% appropriate abstention rate** (safely escalated), and **0.00% detected unsafe or context-bound output**.
 
 ---
 
