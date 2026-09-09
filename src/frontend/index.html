@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SupportPilot AI — Autonomous Support & Escalation Console</title>
+  <meta name="description" content="Enterprise AI Customer Support Operations Console for AppleSupport with provenanced evidence retrieval and fail-closed safety escalation.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+  <!-- App Background Radial Lights -->
+  <div class="bg-glow bg-glow-1"></div>
+  <div class="bg-glow bg-glow-2"></div>
+
+  <!-- Top Navigation Header -->
+  <header class="app-header">
+    <div class="header-inner">
+      <div class="brand">
+        <div class="brand-badge">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <div class="brand-row">
+            <h1 class="brand-title">SupportPilot <span class="brand-ai">AI</span></h1>
+            <span class="brand-chip">ENTERPRISE CONSOLE</span>
+          </div>
+          <p class="brand-subtitle">Brand-Specific Autonomous Resolution & Provenanced Escalation Agent for @AppleSupport</p>
+        </div>
+      </div>
+
+      <nav class="nav-tabs" aria-label="Console navigation">
+        <button class="nav-tab active" data-view="console">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+          Live Console
+        </button>
+        <button class="nav-tab" data-view="evaluation">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg>
+          Evaluation Benchmark
+        </button>
+        <button class="nav-tab" data-view="safety">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          Failure & Safety
+        </button>
+      </nav>
+
+      <div class="header-telemetry">
+        <div class="telemetry-pill">
+          <span class="status-dot"></span>
+          <span id="agentStatusText">Agent Ready</span>
+        </div>
+        <div class="telemetry-tag">
+          <span>ZERO LEAKAGE</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="main-content">
+    <!-- Top Executive KPI Banner -->
+    <section class="kpi-banner">
+      <div class="kpi-card kpi-blue">
+        <div class="kpi-top">
+          <span class="kpi-meta">Intent Accuracy</span>
+          <span class="kpi-badge">12 Balanced Classes</span>
+        </div>
+        <div class="kpi-value text-blue" id="kpiAccuracyVal">65.50%</div>
+        <div class="kpi-footer">
+          <div class="kpi-sub">+1.50% over baseline &bull; Macro F1 65.50%</div>
+        </div>
+      </div>
+
+      <div class="kpi-card kpi-emerald">
+        <div class="kpi-top">
+          <span class="kpi-meta">Escalation Recall</span>
+          <span class="kpi-badge badge-emerald">Safety Critical</span>
+        </div>
+        <div class="kpi-value text-emerald" id="kpiRecallVal">88.33%</div>
+        <div class="kpi-footer">
+          <div class="kpi-sub">53 of 60 high-risk cases captured</div>
+        </div>
+      </div>
+
+      <div class="kpi-card kpi-amber">
+        <div class="kpi-top">
+          <span class="kpi-meta">Provenance-Backed Grounding Coverage</span>
+          <span class="kpi-badge badge-amber">Attribution Coverage</span>
+        </div>
+        <div class="kpi-value text-amber" id="kpiGroundingVal">70.50%</div>
+        <div class="kpi-footer">
+          <div class="kpi-sub">141/200 provenanced historical replies</div>
+        </div>
+      </div>
+
+      <div class="kpi-card kpi-purple">
+        <div class="kpi-top">
+          <span class="kpi-meta">Unsafe Reply Rate</span>
+          <span class="kpi-badge badge-purple">Fail-Closed Safety</span>
+        </div>
+        <div class="kpi-value text-purple" id="kpiUnsafeVal">0.00%</div>
+        <div class="kpi-footer">
+          <div class="kpi-sub">0 leaked DMs, false policies, or hallucinated timelines</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW 1: LIVE SUPPORT CONSOLE -->
+    <section id="view-console" class="view-panel active">
+      <div class="console-grid">
+        
+        <!-- Left Column: Inbound Inquiry & Pipeline Control -->
+        <div class="console-col-input">
+          <div class="glass-panel inquiry-panel">
+            <div class="panel-head">
+              <div class="panel-title-wrap">
+                <span class="panel-icon">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                </span>
+                <div>
+                  <h2 class="panel-heading">Inbound Customer Inquiry</h2>
+                  <p class="panel-sub">Simulate live customer queries against the genuine SupportPilot agent pipeline</p>
+                </div>
+              </div>
+              <span class="live-pill">LIVE INFERENCE</span>
+            </div>
+
+            <!-- Quick Scenario Selectors Grouped by Category -->
+            <div class="scenario-section">
+              <div class="scenario-label">SELECT VERIFIED BENCHMARK SCENARIO:</div>
+              <div class="scenario-chips">
+                <button class="sample-chip chip-hardware" data-query="My iPhone screen is completely cracked and shattered after dropping it on the street.">
+                  <span class="chip-dot dot-rose"></span> Cracked Screen (Hardware)
+                </button>
+                <button class="sample-chip chip-selfservice" data-query="How do I turn on low power mode on iPhone 7? My battery drains fast.">
+                  <span class="chip-dot dot-emerald"></span> Battery Drain (Self-Service)
+                </button>
+                <button class="sample-chip chip-software" data-query="Ever since I upgraded to High Sierra, my media controls on the keyboard don't work with iTunes.">
+                  <span class="chip-dot dot-blue"></span> Keyboard Media Keys (macOS)
+                </button>
+                <button class="sample-chip chip-distress" data-query="I had to make a 5:30 AM flight and my alarm didn't go off. Airline charged me $640 for rebooking!">
+                  <span class="chip-dot dot-amber"></span> $640 Flight Loss (Distress)
+                </button>
+                <button class="sample-chip chip-security" data-query="I am locked out of my Apple ID and cannot receive 2FA verification codes.">
+                  <span class="chip-dot dot-purple"></span> 2FA Locked Account (Security)
+                </button>
+                <button class="sample-chip chip-billing" data-query="why does Apple Pay say payment not completed when I buy from the store?">
+                  <span class="chip-dot dot-amber"></span> Apple Pay Error (Billing)
+                </button>
+              </div>
+            </div>
+
+            <!-- Textarea Box -->
+            <div class="inquiry-input-box">
+              <label for="customerQueryInput" class="sr-only">Customer inquiry message</label>
+              <textarea 
+                id="customerQueryInput" 
+                placeholder="Enter an incoming Apple customer inquiry message (e.g. battery drain, cracked glass, account lock, audio failure)..." 
+                rows="4"
+                spellcheck="false"
+              ></textarea>
+              
+              <div class="inquiry-footer">
+                <div class="inquiry-info">
+                  <span id="charCount">0 characters</span>
+                  <span class="shortcut-hint"><kbd>Ctrl</kbd> + <kbd>Enter</kbd> to analyze</span>
+                </div>
+                <button id="clearBtn" class="btn-ghost" title="Clear customer inquiry text">Clear</button>
+              </div>
+            </div>
+
+            <!-- Action Row -->
+            <div class="action-row">
+              <button id="analyzeBtn" class="btn-execute">
+                <span class="btn-content">
+                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                  <span>Execute SupportPilot Pipeline</span>
+                </span>
+                <span class="spinner" id="analyzeSpinner"></span>
+              </button>
+            </div>
+
+            <!-- Error Banner -->
+            <div id="errorBanner" class="alert-banner alert-error" style="display: none;">
+              <div class="alert-icon-wrap">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              </div>
+              <div id="errorMessage" class="alert-content"></div>
+            </div>
+
+            <!-- Pipeline Architecture Flow Visualizer -->
+            <div class="pipeline-tracker">
+              <div class="pipeline-tracker-header">
+                <span class="tracker-title">AGENTIC EXECUTION GRAPH</span>
+                <span class="tracker-sub">Five-Stage Safe Dispatch</span>
+              </div>
+              <div class="tracker-nodes">
+                <div class="tracker-node active" id="track-step-1">
+                  <span class="node-index">01</span>
+                  <span class="node-label">Query</span>
+                </div>
+                <div class="node-connector"></div>
+                <div class="tracker-node" id="track-step-2">
+                  <span class="node-index">02</span>
+                  <span class="node-label">Intent</span>
+                </div>
+                <div class="node-connector"></div>
+                <div class="tracker-node" id="track-step-3">
+                  <span class="node-index">03</span>
+                  <span class="node-label">Retrieval</span>
+                </div>
+                <div class="node-connector"></div>
+                <div class="tracker-node" id="track-step-4">
+                  <span class="node-index">04</span>
+                  <span class="node-label">Grounded Reply</span>
+                </div>
+                <div class="node-connector"></div>
+                <div class="tracker-node" id="track-step-5">
+                  <span class="node-index">05</span>
+                  <span class="node-label">Decision</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Column: Live Pipeline Output -->
+        <div class="console-col-output">
+
+          <!-- Empty State -->
+          <div id="emptyConsoleState" class="glass-panel empty-console-card">
+            <div class="empty-halo">
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+              </svg>
+            </div>
+            <h3 class="empty-title">Awaiting Customer Inquiry</h3>
+            <p class="empty-desc">
+              Select one of the verified scenarios on the left or type an arbitrary customer problem to execute real-time intent classification, dense retrieval, and grounded reply generation.
+            </p>
+            <div class="empty-specs">
+              <div class="spec-tag">MiniLM-L6-v2 Dense Index</div>
+              <div class="spec-tag">TF-IDF Intent Classifier</div>
+              <div class="spec-tag">Fail-Closed Safety Guardrails</div>
+            </div>
+          </div>
+
+          <!-- Loading State -->
+          <div id="loadingConsoleState" class="glass-panel loading-console-card" style="display: none;">
+            <div class="loading-ring-wrap">
+              <div class="orbital-ring"></div>
+              <div class="orbital-dot"></div>
+            </div>
+            <h3 class="loading-title">Executing SupportPilot Agent Pipeline...</h3>
+            <p class="loading-desc">
+              Computing sentence embeddings, querying dense vector index (800 Apple conversations), evaluating intent agreement, and verifying citation safety gates.
+            </p>
+            <div class="loading-steps-pills">
+              <span class="loading-pill pill-active">Classifying Intent</span>
+              <span class="loading-pill">Dense Retrieval</span>
+              <span class="loading-pill">Safety Gating</span>
+            </div>
+          </div>
+
+          <!-- Live Result Container (Populated strictly by API response) -->
+          <div id="resultContainer" class="results-wrapper" style="display: none;">
+            
+            <!-- 1. Executive Operational Decision Card -->
+            <div id="decisionCard" class="glass-panel decision-card-executive">
+              <div class="decision-card-top">
+                <div class="decision-status-group">
+                  <span class="meta-label">OPERATIONAL DISPATCH ACTION</span>
+                  <div class="badge-row">
+                    <div id="decisionBadge" class="dispatch-badge">--</div>
+                    <span id="decisionContextPill" class="dispatch-context"></span>
+                  </div>
+                </div>
+                <div class="confidence-display">
+                  <span class="meta-label">CALIBRATED CONFIDENCE</span>
+                  <div id="confidenceScore" class="confidence-number">--</div>
+                </div>
+              </div>
+
+              <!-- Rationale & Escalation Reason -->
+              <div class="decision-details">
+                <div id="decisionRationale" class="rationale-text"></div>
+                <div id="escalationReasonBox" class="escalation-callout" style="display: none;">
+                  <div class="callout-icon">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                  </div>
+                  <div class="callout-body">
+                    <span class="callout-label">Escalation Trigger:</span>
+                    <span id="escalationReasonText" class="callout-value mono">none</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 2. Intent Classification Card -->
+            <div class="glass-panel intent-card">
+              <div class="card-header-flex">
+                <div>
+                  <span class="meta-label">PREDICTED INTENT CLASS</span>
+                  <div class="intent-name-row">
+                    <span id="intentPill" class="intent-tag">--</span>
+                    <span id="intentConfidenceTag" class="tag-subtle">Confidence: <span id="confidencePct">--</span></span>
+                  </div>
+                </div>
+                <span class="tag-model">TF-IDF + L-BFGS</span>
+              </div>
+
+              <!-- Confidence Progress Track -->
+              <div class="confidence-bar-container">
+                <div class="confidence-track">
+                  <div id="confidenceBarFill" class="confidence-fill"></div>
+                </div>
+              </div>
+
+              <!-- Alternative Intent Probabilities -->
+              <div class="alt-intents-section">
+                <span class="meta-label">TOP CANDIDATE PROBABILITIES</span>
+                <div id="altIntentsList" class="alt-intents-grid"></div>
+              </div>
+            </div>
+
+            <!-- 3. Grounded Draft Response (Prominently Highlighted) -->
+            <div class="glass-panel draft-response-card">
+              <div class="draft-header">
+                <div class="draft-title-wrap">
+                  <span class="draft-icon">
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+                  </span>
+                  <span class="panel-heading">Grounded Draft Response</span>
+                </div>
+                <div class="draft-actions">
+                  <span id="groundingBadge" class="grounding-pill grounded">--</span>
+                  <button id="copyDraftBtn" class="btn-copy" title="Copy response to clipboard">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                    <span id="copyBtnText">Copy</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- The Actual Reply Bubble -->
+              <div id="draftReplyText" class="draft-bubble"></div>
+
+              <!-- Attribution Footer for Top Candidate -->
+              <div id="attributionBox" class="attribution-card" style="display: none;">
+                <div class="attr-header-row">
+                  <div class="attr-source-info">
+                    <span class="attr-dot"></span>
+                    <span class="attr-title">Retrieved Grounding Evidence (Rank #1)</span>
+                  </div>
+                  <span id="attrSimilarity" class="attr-score-badge mono">--</span>
+                </div>
+                <div class="attr-grid">
+                  <div class="attr-item">
+                    <span class="attr-k">Conversation ID:</span>
+                    <span id="attrConvId" class="attr-v mono">--</span>
+                  </div>
+                  <div class="attr-item">
+                    <span class="attr-k">Corpus Intent:</span>
+                    <span id="attrIntent" class="attr-v mono">--</span>
+                  </div>
+                </div>
+                <div class="attr-query-quote">
+                  <span class="attr-quote-label">Matched Historical Query:</span>
+                  <div id="attrMatchedQuery" class="attr-quote-body"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 4. Dense Historical Evidence Candidates (Top 3) -->
+            <div class="glass-panel evidence-panel">
+              <div class="card-header-flex">
+                <div>
+                  <span class="meta-label">HISTORICAL EVIDENCE POOL</span>
+                  <h3 class="panel-sub-heading">Top-3 Retrieved Historical Conversations</h3>
+                </div>
+                <span class="tag-model">Dense MiniLM Index</span>
+              </div>
+              <div id="evidenceList" class="evidence-cards-list"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW 2: EVALUATION BENCHMARK VIEW -->
+    <section id="view-evaluation" class="view-panel">
+      <div class="glass-panel evaluation-container">
+        <div class="view-header">
+          <div>
+            <div class="view-badge-row">
+              <span class="section-tag">OFFICIAL AUDITED RESULTS</span>
+              <span class="badge-verified">Verified by Project Author (Pravalika)</span>
+            </div>
+            <h2 class="view-title">Human-Verified Benchmark Evaluation</h2>
+            <p class="view-desc">
+              Exhaustive evaluation of SupportPilot AI across 200 human-verified golden evaluation records with strict zero data leakage against the 800 training conversations.
+            </p>
+          </div>
+        </div>
+
+        <!-- Headline Clarification Warning Notice -->
+        <div class="alert-banner alert-executive-warning">
+          <div class="alert-icon-wrap icon-amber">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          </div>
+          <div class="alert-content">
+            <div class="alert-title">Critical Methodology Notice &mdash; Attribution Coverage vs. Ticket Resolution</div>
+            <p class="alert-text">
+              The headline metric <strong>70.50% Provenance-Backed Grounding Coverage</strong> measures <em>attribution coverage</em>: the agent identifies verified Apple support records meeting both semantic threshold (&ge; 0.45 cosine similarity) and query-evidence intent concordance.
+              <strong>70.50% does NOT mean 70.5% of customer tickets are permanently resolved.</strong> A public social customer support dataset lacks device-level telemetry to confirm whether the user's issue was resolved without subsequent follow-up.
+            </p>
+          </div>
+        </div>
+
+        <!-- Comparative Benchmark Matrix -->
+        <div class="table-section">
+          <div class="table-head-info">
+            <h3 class="table-heading">Tripartite Comparative Benchmark Matrix</h3>
+            <span class="table-caption">Comparing Heuristic Baseline &rarr; Machine-Assisted Recommendation &rarr; Human-Verified Benchmark</span>
+          </div>
+
+          <div class="table-responsive">
+            <table class="benchmark-table">
+              <thead>
+                <tr>
+                  <th>Evaluation Dimension</th>
+                  <th>Heuristic Baseline</th>
+                  <th>Machine-Assisted Rec</th>
+                  <th>Human-Verified Benchmark</th>
+                  <th>Operational Delta</th>
+                  <th>Operational Interpretation</th>
+                </tr>
+              </thead>
+              <tbody id="benchmarkMatrixBody">
+                <!-- Dynamically populated from /api/metrics -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Per-Intent Breakdown Table -->
+        <div class="table-section" style="margin-top: 36px;">
+          <div class="table-head-info">
+            <h3 class="table-heading">Per-Intent Classification Performance (12 Balanced Classes)</h3>
+            <span class="table-caption">Evaluated against the final human-verified golden dataset</span>
+          </div>
+
+          <div class="table-responsive">
+            <table class="benchmark-table">
+              <thead>
+                <tr>
+                  <th>Intent Class</th>
+                  <th>Golden Support (N)</th>
+                  <th>Precision</th>
+                  <th>Recall</th>
+                  <th>F1-Score</th>
+                  <th>Relative F1 Distribution</th>
+                </tr>
+              </thead>
+              <tbody id="perIntentTableBody">
+                <!-- Dynamically populated from /api/metrics -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Decision Policy Confusion Matrix -->
+        <div class="matrix-section" style="margin-top: 36px;">
+          <div class="table-head-info">
+            <h3 class="table-heading">Decision Policy Confusion Matrix (200 Golden Cases)</h3>
+            <span class="table-caption">Autonomous dispatch (AUTO_HANDLE) vs. Precautionary routing (ESCALATE)</span>
+          </div>
+
+          <div class="cm-grid">
+            <div class="cm-cell cm-tn">
+              <div class="cm-top">
+                <span class="cm-label">True Negatives (Safe Auto-Handle)</span>
+                <span class="cm-tag tag-tn">TN</span>
+              </div>
+              <div class="cm-num">87</div>
+              <div class="cm-desc">Routine, solvable troubleshooting inquiries automated with grounded evidence.</div>
+            </div>
+
+            <div class="cm-cell cm-fp">
+              <div class="cm-top">
+                <span class="cm-label">False Positives (Over-Escalated)</span>
+                <span class="cm-tag tag-fp">FP</span>
+              </div>
+              <div class="cm-num">53</div>
+              <div class="cm-desc">Safely routed to human reps due to evidence insufficiency or similarity floor fallback.</div>
+            </div>
+
+            <div class="cm-cell cm-fn">
+              <div class="cm-top">
+                <span class="cm-label">False Negatives (Missed Escalation)</span>
+                <span class="cm-tag tag-fn">FN</span>
+              </div>
+              <div class="cm-num">7</div>
+              <div class="cm-desc">High-distress cases (e.g. missed flight alarms) that avoided keyword safety triggers.</div>
+            </div>
+
+            <div class="cm-cell cm-tp">
+              <div class="cm-top">
+                <span class="cm-label">True Positives (Accurately Caught)</span>
+                <span class="cm-tag tag-tp">TP</span>
+              </div>
+              <div class="cm-num">53</div>
+              <div class="cm-desc">Hardware damage, billing disputes, 2FA lockouts, and abusive language intercepted.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW 3: FAILURE & SAFETY VIEW -->
+    <section id="view-safety" class="view-panel">
+      <div class="glass-panel safety-container">
+        <div class="view-header">
+          <div>
+            <div class="view-badge-row">
+              <span class="section-tag">SAFETY ARCHITECTURE & AUDIT</span>
+              <span class="badge-subtle">Audited Real Cases</span>
+            </div>
+            <h2 class="view-title">Failure Analysis & Fail-Closed Safety Philosophy</h2>
+            <p class="view-desc">
+              Enterprise customer support requires an asymmetrical loss function: an ungrounded hallucination or unauthorized policy promise is far more destructive than a precautionary human escalation.
+            </p>
+          </div>
+        </div>
+
+        <!-- 4 Pillars of Fail-Closed Safety -->
+        <div class="philosophy-grid">
+          <div class="philosophy-pillar">
+            <div class="pillar-icon pillar-emerald">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            </div>
+            <h4 class="pillar-title">1. Intent Concordance</h4>
+            <p class="pillar-desc">
+              Retrieved replies are disqualified if the historical case intent does not match the predicted customer intent, completely preventing cross-domain hallucinations.
+            </p>
+          </div>
+
+          <div class="philosophy-pillar">
+            <div class="pillar-icon pillar-blue">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+            </div>
+            <h4 class="pillar-title">2. Strict Similarity Floor</h4>
+            <p class="pillar-desc">
+              Any candidate scoring below 0.45 cosine similarity is rejected from autonomous dispatch, preventing tenuous or noisy keyword overlaps.
+            </p>
+          </div>
+
+          <div class="philosophy-pillar">
+            <div class="pillar-icon pillar-rose">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
+            </div>
+            <h4 class="pillar-title">3. Context-Bound Stripping</h4>
+            <p class="pillar-desc">
+              Rejects any historical response referencing private DMs, specific timestamps (&ldquo;in 10 minutes&rdquo;), personal case numbers, or ungrounded repair promises.
+            </p>
+          </div>
+
+          <div class="philosophy-pillar">
+            <div class="pillar-icon pillar-purple">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            </div>
+            <h4 class="pillar-title">4. Safe Precautionary Routing</h4>
+            <p class="pillar-desc">
+              When evidence is withheld or ambiguous, the agent abstains with code <code>insufficient_grounding</code> rather than speculating unsupported Apple policies.
+            </p>
+          </div>
+        </div>
+
+        <!-- Top 5 Failure Modes Section -->
+        <div class="failures-section" style="margin-top: 36px;">
+          <div class="table-head-info">
+            <h3 class="table-heading">Top 5 Meaningful Real Failure Modes (Expandable Case Studies)</h3>
+            <span class="table-caption">Deep architectural diagnosis and actionable improvement hypotheses from the human-verified benchmark</span>
+          </div>
+
+          <div id="failureCardsList" class="failure-accordion-list">
+            <!-- Dynamically populated from /api/failures -->
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Polished Enterprise Footer -->
+  <footer class="app-footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <span class="footer-dot"></span>
+        <span>SupportPilot AI &mdash; Autonomous Support & Escalation Console</span>
+      </div>
+      <div class="footer-meta">
+        <span>Verified by Project Author (Pravalika)</span>
+        <span class="meta-sep">&bull;</span>
+        <span>Strict Zero Data Leakage Isolation</span>
+        <span class="meta-sep">&bull;</span>
+        <span>FastAPI + Dense MiniLM-L6-v2</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Toast Notification Container -->
+  <div id="toastNotification" class="toast-popup" style="display: none;"></div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
