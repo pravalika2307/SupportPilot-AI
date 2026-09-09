@@ -13,8 +13,10 @@ from typing import List, Dict, Any, Optional
 from src.models.baseline_tfidf_lr import TfidfLogisticRegressionBaseline
 from src.models.retriever import HistoricalSupportRetriever
 from src.data.create_golden_eval import NON_ENGLISH_INDICATORS, HIGH_RISK_ESCALATION_KEYWORDS
+from src.models.reply_generation import GroundedReplyGenerator
 
-# Standard grounded Apple technical resolution knowledge base
+# Legacy guide retained for backwards-compatible imports only. Phase 4 reply
+# generation never uses it: customer-facing guidance must come from evidence.
 INTENT_RESOLUTION_GUIDES = {
     "battery_power": (
         "We can certainly help with your battery performance! You can check your battery usage under Settings > Battery "
@@ -112,6 +114,7 @@ class SupportPilotAgent:
         self.retriever = retriever
         self.confidence_threshold = confidence_threshold
         self.similarity_threshold = similarity_threshold
+        self.reply_generator = GroundedReplyGenerator(similarity_threshold)
 
     def _detect_escalation_risk(self, query: str, intent: str, confidence: float) -> Optional[str]:
         """
@@ -169,19 +172,7 @@ class SupportPilotAgent:
         Synthesizes a brand-aligned, grounded draft response using retrieved evidence
         or the verified Apple resolution repository.
         """
-        top_match = retrieved_evidence[0] if retrieved_evidence else None
-        
-        # If top match is highly relevant and has a clean resolution
-        if top_match and top_match["similarity_score"] >= self.similarity_threshold:
-            hist_reply = top_match["historical_agent_reply"]
-            # Clean up Twitter handles and links from historical reply
-            clean_reply = re.sub(r"@\w+\b", "", hist_reply).strip()
-            # If the historical reply provides useful guidance
-            if len(clean_reply.split()) > 8 and "dm" not in clean_reply.lower():
-                return f"Based on verified resolution for similar cases: {clean_reply}"
-
-        # Otherwise fallback to grounded intent resolution guide
-        return INTENT_RESOLUTION_GUIDES.get(intent, INTENT_RESOLUTION_GUIDES["general_inquiry_other"])
+        return self.reply_generator.generate(retrieved_evidence, intent)["text"]
 
     def process_query(self, query: str) -> Dict[str, Any]:
         """
@@ -198,8 +189,13 @@ class SupportPilotAgent:
         # 2. Evidence retrieval (top-3)
         retrieved_evidence = self.retriever.retrieve(clean_query, top_k=3)
 
-        # 3. Decision policy: AUTO_HANDLE vs ESCALATE
+        # 3. Evidence-bound reply generation. No intent guide is used as a fallback.
+        reply = self.reply_generator.generate(retrieved_evidence, predicted_intent)
+
+        # 4. Decision policy: AUTO_HANDLE vs ESCALATE
         escalation_reason = self._detect_escalation_risk(clean_query, predicted_intent, confidence)
+        if escalation_reason is None and reply["grounding_status"] != "grounded":
+            escalation_reason = "insufficient_grounding"
         
         if escalation_reason is not None:
             decision = "ESCALATE"
@@ -215,9 +211,6 @@ class SupportPilotAgent:
                 f"with sufficient confidence ({confidence:.2f} >= {self.confidence_threshold:.2f})."
             )
 
-        # 4. Grounded draft reply generation
-        draft_reply = self._generate_draft_reply(clean_query, predicted_intent, retrieved_evidence)
-
         return {
             "customer_query": clean_query,
             "predicted_intent": predicted_intent,
@@ -225,7 +218,11 @@ class SupportPilotAgent:
             "decision": decision,
             "escalation_reason": escalation_reason,
             "decision_rationale": rationale,
-            "draft_reply": draft_reply,
+            "draft_reply": reply["text"],
             "retrieved_evidence": retrieved_evidence,
+            "reply_evidence": reply["citation"],
+            "grounding_status": reply["grounding_status"],
+            "unsupported_policy_detected": reply["unsupported_policy_detected"],
+            "grounding_rejection_reasons": reply["rejection_reasons"],
             "class_probabilities": probabilities
         }

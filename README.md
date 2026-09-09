@@ -5,9 +5,9 @@
 The system is designed to:
 1. **Classify** inbound customer messages into a data-derived intent taxonomy.
 2. **Retrieve** historically similar, resolved support conversations.
-3. **Generate** grounded, brand-aligned support replies with step-by-step guidance.
+3. **Generate** evidence-bound support replies from cited historical AppleSupport examples.
 4. **Decide** whether to **AUTO-HANDLE** or **ESCALATE** with explicit rationales (e.g. security risks, account lockouts, or hardware damage).
-5. **Evaluate** rigor using reproducible baselines, a golden evaluation set (150–250 real examples), and an LLM-as-a-judge harness.
+5. **Evaluate** rigor using reproducible baselines, a golden evaluation set (150–250 real examples), deterministic citation checks, and an LLM-as-a-judge harness.
 
 ---
 
@@ -96,6 +96,20 @@ Investigation of Phase 2 false negatives revealed missed escalations due to non-
 
 ---
 
+## Phase 4: Grounded Reply Generation & Quality Evaluation
+
+Phase 4 makes a customer-facing reply evidence-bound instead of falling back to a hand-written intent guide:
+
+- A reply is a sanitized copy of the top retrieved historical AppleSupport reply only when its similarity is at least `0.20`.
+- `reply_evidence` exposes the source conversation ID, rank, similarity, matched query, and original historical reply.
+- If there is insufficient evidence, the agent emits no policy-bearing troubleshooting and escalates with `insufficient_grounding`.
+- The deterministic evaluation verifies citation integrity and unsupported-policy output. An injected `LLMReplyJudge` uses a five-dimension 1–5 rubric (groundedness, relevance, helpfulness, tone, safety); it intentionally records no score without a real judge call.
+- `human_llm_agreement` computes per-dimension Cohen's kappa after matching real human and LLM annotations by `golden_id`.
+
+Actual run on the real zero-leakage 200-example golden set: **70.50% grounded/cited replies**, **70.50% provenance match rate**, **29.50% appropriate abstentions (safely escalated)**, and **0.00% detected unsafe or context-bound output**.
+
+---
+
 ## Project Structure
 
 ```
@@ -129,15 +143,20 @@ SupportPilot AI/
 │   │   ├── retriever.py                    # Historical support retrieval engine (TF-IDF)
 │   │   ├── dense_retriever.py              # Dense semantic retrieval engine (SentenceTransformers)
 │   │   └── agent.py                        # SupportPilotAgent decision & drafting pipeline
+│   │   └── reply_generation.py              # Evidence-bound historical reply selector
 │   └── evaluation/
 │       ├── evaluate_pipeline.py            # Phase 2 evaluation harness
 │       └── evaluate_phase3_retrievers.py   # Phase 3 side-by-side evaluation harness
+│       ├── evaluate_phase4_replies.py       # Phase 4 real-data reply-quality evaluation
+│       └── reply_quality.py                 # Rubric, deterministic checks, agreement helper
 ├── reports/
 │   ├── phase1_applesupport_eda.md          # Comprehensive Phase 1 EDA report
 │   ├── phase2_baseline_and_golden_eval.md  # Complete Phase 2 benchmark report
 │   ├── phase2_metrics.json                 # Machine-readable evaluation metrics
 │   ├── phase3_dense_retrieval_and_escalation.md # Phase 3 dense retrieval benchmark report
 │   └── phase3_metrics.json                 # Machine-readable Phase 3 metrics
+│   └── phase4_grounded_reply_quality.md     # Phase 4 report from real golden data
+│   └── phase4_reply_quality_metrics.json    # Machine-readable Phase 4 metrics
 └── tests/
     ├── test_data_pipeline.py               # Data pipeline & thread reconstruction tests
     ├── test_baselines_and_agent.py         # Baselines, TF-IDF retriever, and agent tests
@@ -155,6 +174,9 @@ python -m pytest tests/ -v
 
 # Run the full Phase 2 evaluation harness
 python -m src.evaluation.evaluate_pipeline
+
+# Run the Phase 4 real-data reply-quality evaluation
+python -m src.evaluation.evaluate_phase4_replies
 ```
 
 ---

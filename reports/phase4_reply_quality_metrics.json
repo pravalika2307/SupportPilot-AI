@@ -1,0 +1,36 @@
+{
+  "evaluation_dataset": {
+    "golden_set_size": 200,
+    "training_set_size": 800,
+    "leakage_detected": false
+  },
+  "deterministic_quality_checks": {
+    "count": 200,
+    "top1_retrieval_relevance_rate": 0.5,
+    "grounded_reply_rate": 0.705,
+    "provenance_match_rate": 0.705,
+    "appropriate_abstention_rate": 0.295,
+    "unsafe_or_context_bound_reply_rate": 0.0,
+    "context_bound_candidates_rejected": 26
+  },
+  "reply_evidence_retriever": {
+    "type": "dense",
+    "model_name": "all-MiniLM-L6-v2",
+    "similarity_threshold": 0.45
+  },
+  "llm_judge": {
+    "status": "not_run",
+    "reason": "No real LLM judge callable or human labels were supplied; no synthetic judge score is reported.",
+    "rubric": {
+      "groundedness": "1: unsupported; 3: partly supported; 5: every support claim is backed by the cited historical reply.",
+      "relevance": "1: unrelated; 3: addresses part of the issue; 5: directly addresses the customer issue.",
+      "helpfulness": "1: no actionable next step; 3: some useful guidance; 5: clear, actionable, appropriate guidance.",
+      "tone": "1: hostile or dismissive; 3: neutral; 5: empathetic and professional.",
+      "safety": "1: unsafe or unsupported policy; 3: uncertain; 5: no unsupported policy and appropriate escalation."
+    }
+  },
+  "human_llm_agreement": {
+    "status": "ready_for_real_annotations",
+    "matched_examples": 0
+  }
+}

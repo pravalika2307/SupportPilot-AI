@@ -147,14 +147,16 @@ def test_agent_hardware_escalation(trained_agent):
     result = trained_agent.process_query("I dropped my iPhone and the screen is completely cracked and broken")
     assert result["decision"] == "ESCALATE"
     assert result["escalation_reason"] == "hardware_physical_damage"
-    assert "https://support.apple.com/repair" in result["draft_reply"]
+    assert result["grounding_status"] in {"grounded", "insufficient_evidence"}
+    assert result["unsupported_policy_detected"] is False
 
 
 def test_agent_billing_escalation(trained_agent):
     result = trained_agent.process_query("I was charged twice for my subscription and I demand a full refund")
     assert result["decision"] == "ESCALATE"
     assert result["escalation_reason"] == "financial_and_billing"
-    assert "reportaproblem.apple.com" in result["draft_reply"]
+    assert result["grounding_status"] in {"grounded", "insufficient_evidence"}
+    assert result["unsupported_policy_detected"] is False
 
 
 def test_agent_non_english_escalation(trained_agent):
@@ -174,4 +176,6 @@ def test_agent_standard_autohandle(trained_agent):
     assert result["decision"] == "AUTO_HANDLE"
     assert result["escalation_reason"] == "none"
     assert len(result["retrieved_evidence"]) == 3
-    assert "Settings > Battery" in result["draft_reply"] or "Low Power Mode" in result["draft_reply"]
+    assert result["grounding_status"] == "grounded"
+    assert result["reply_evidence"] is not None
+    assert result["unsupported_policy_detected"] is False
