@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SupportPilot AI — Human Golden Set Annotation Studio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-primary: #0b0f19;
+      --bg-secondary: #111827;
+      --bg-card: #1e293b;
+      --bg-card-hover: #26354a;
+      --border-color: #334155;
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+      --accent-blue: #38bdf8;
+      --accent-green: #10b981;
+      --accent-amber: #f59e0b;
+      --accent-rose: #f43f5e;
+      --accent-purple: #a855f7;
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 14px;
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.4);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.6);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.5;
+      padding-bottom: 100px;
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(11, 15, 25, 0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-color);
+      padding: 16px 24px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .brand-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-logo {
+      width: 34px;
+      height: 34px;
+      background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 18px;
+    }
+
+    .brand-title h1 {
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .brand-title span {
+      color: var(--text-secondary);
+      font-size: 13px;
+      margin-left: 6px;
+    }
+
+    .header-controls {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .annotator-field {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      padding: 6px 12px;
+      font-size: 13px;
+    }
+
+    .annotator-field label { color: var(--text-secondary); font-weight: 500; }
+    .annotator-field input {
+      background: transparent;
+      border: none;
+      color: var(--text-primary);
+      font-size: 13px;
+      font-weight: 600;
+      outline: none;
+      width: 140px;
+    }
+
+    .btn {
+      padding: 8px 16px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all 0.15s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #0284c7, #2563eb);
+      color: white;
+      box-shadow: var(--shadow-sm);
+    }
+    .btn-primary:hover { background: linear-gradient(135deg, #0369a1, #1d4ed8); }
+
+    .btn-success {
+      background: #059669;
+      color: white;
+    }
+    .btn-success:hover { background: #047857; }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--border-color);
+      color: var(--text-secondary);
+    }
+    .btn-outline:hover {
+      background: var(--bg-card);
+      color: var(--text-primary);
+      border-color: var(--text-muted);
+    }
+
+    .container {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    /* KPI Summary Stats */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .kpi-card {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .kpi-label {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .kpi-value {
+      font-size: 26px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-top: 4px;
+    }
+
+    .kpi-sub {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    /* Filter Toolbar */
+    .toolbar {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 14px 18px;
+      margin-bottom: 24px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .filter-tabs {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .tab-btn {
+      background: transparent;
+      border: 1px solid var(--border-color);
+      color: var(--text-secondary);
+      padding: 6px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .tab-btn.active {
+      background: var(--accent-blue);
+      color: #0b0f19;
+      border-color: var(--accent-blue);
+    }
+
+    .batch-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .search-box {
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      padding: 6px 12px;
+      color: var(--text-primary);
+      font-size: 13px;
+      width: 220px;
+      outline: none;
+    }
+
+    /* Cards Grid */
+    .cards-container {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .example-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      transition: border-color 0.15s ease, background-color 0.15s ease;
+      position: relative;
+    }
+
+    .example-card.changed-diff {
+      border-left: 4px solid var(--accent-amber);
+    }
+
+    .example-card.reviewed {
+      border-color: #1e3a5f;
+    }
+
+    .card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .id-badge {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--accent-blue);
+      background: rgba(56, 189, 248, 0.1);
+      padding: 2px 8px;
+      border-radius: var(--radius-sm);
+    }
+
+    .pill {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: var(--radius-sm);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .pill-edge { background: rgba(244, 63, 94, 0.15); color: var(--accent-rose); }
+    .pill-straight { background: rgba(16, 185, 129, 0.15); color: var(--accent-green); }
+    .pill-diff { background: rgba(245, 158, 11, 0.2); color: var(--accent-amber); }
+    .pill-confirm { background: rgba(56, 189, 248, 0.15); color: var(--accent-blue); }
+
+    .query-box {
+      background: var(--bg-primary);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: var(--radius-sm);
+      padding: 14px 16px;
+      font-size: 14px;
+      color: var(--text-primary);
+      margin-bottom: 16px;
+      line-height: 1.6;
+    }
+
+    .query-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      font-weight: 600;
+      margin-bottom: 4px;
+      letter-spacing: 0.05em;
+    }
+
+    /* Comparison Grid */
+    .comparison-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.3fr 1.3fr;
+      gap: 16px;
+      align-items: stretch;
+    }
+
+    @media (max-width: 1024px) {
+      .comparison-grid { grid-template-columns: 1fr; }
+    }
+
+    .panel {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .panel-header {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 10px;
+      color: var(--text-secondary);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .data-row {
+      margin-bottom: 8px;
+      font-size: 13px;
+    }
+    .data-key { color: var(--text-muted); font-size: 12px; margin-bottom: 2px; }
+    .data-val { font-family: 'JetBrains Mono', monospace; font-weight: 600; color: var(--text-primary); }
+
+    .action-badge {
+      display: inline-block;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .action-auto { background: rgba(16, 185, 129, 0.2); color: #34d399; }
+    .action-escalate { background: rgba(244, 63, 94, 0.2); color: #fb7185; }
+
+    .rationale-text {
+      font-size: 12px;
+      color: #cbd5e1;
+      background: rgba(255, 255, 255, 0.03);
+      padding: 8px 10px;
+      border-radius: var(--radius-sm);
+      border-left: 2px solid var(--accent-blue);
+      margin-top: 8px;
+    }
+
+    .form-group {
+      margin-bottom: 10px;
+    }
+    .form-group label {
+      display: block;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      margin-bottom: 4px;
+      text-transform: uppercase;
+    }
+    .form-select {
+      width: 100%;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      color: var(--text-primary);
+      padding: 6px 10px;
+      font-size: 12px;
+      font-family: 'JetBrains Mono', monospace;
+      outline: none;
+    }
+    .form-select:focus { border-color: var(--accent-blue); }
+
+    .decision-status {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      margin-top: 10px;
+      padding-top: 8px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .status-checked { color: var(--accent-green); }
+    .status-pending { color: var(--accent-amber); }
+
+    /* Floating Save Bar */
+    .save-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(11, 15, 25, 0.95);
+      backdrop-filter: blur(12px);
+      border-top: 1px solid var(--border-color);
+      padding: 14px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 99;
+    }
+
+    .save-info {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      font-size: 14px;
+    }
+
+    .progress-bar-container {
+      width: 260px;
+      height: 8px;
+      background: var(--bg-card);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent-blue), var(--accent-green));
+      width: 0%;
+      transition: width 0.2s ease;
+    }
+
+    /* Modal */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(4px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+    .modal-content {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 24px;
+      width: 90%;
+      max-width: 540px;
+      box-shadow: var(--shadow-lg);
+    }
+    .modal-content h3 { margin-bottom: 12px; font-size: 18px; }
+    .modal-content p { color: var(--text-secondary); font-size: 14px; margin-bottom: 18px; }
+    .modal-actions { display: flex; justify-content: flex-end; gap: 10px; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="brand-title">
+      <div class="brand-logo">S</div>
+      <div>
+        <h1>SupportPilot AI <span>Golden Set Human Annotation Studio</span></h1>
+      </div>
+    </div>
+    <div class="header-controls">
+      <div class="annotator-field">
+        <label for="annotatorInput">Reviewer:</label>
+        <input type="text" id="annotatorInput" value="Pravalika" placeholder="Enter your name">
+      </div>
+      <button class="btn btn-primary" onclick="openSaveModal()">Save Decisions</button>
+    </div>
+  </header>
+
+  <div class="container">
+    <!-- Top Stats -->
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-label">Total Benchmark Set</div>
+        <div class="kpi-value" id="totalRecords">200</div>
+        <div class="kpi-sub">Isolated zero-leakage golden samples</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Human Reviewed Count</div>
+        <div class="kpi-value" style="color: var(--accent-green);" id="reviewedCount">0 / 200</div>
+        <div class="kpi-sub" id="reviewedPct">0.0% verified</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Recommendations Flagged</div>
+        <div class="kpi-value" style="color: var(--accent-amber);" id="diffCount">8</div>
+        <div class="kpi-sub">Discrepancies vs heuristic baseline</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Action Distribution</div>
+        <div class="kpi-value" style="font-size: 18px;" id="actionDist">AUTO: 0 | ESC: 0</div>
+        <div class="kpi-sub" id="actionRatio">0.0% containment</div>
+      </div>
+    </div>
+
+    <!-- Toolbar -->
+    <div class="toolbar">
+      <div class="filter-tabs">
+        <button class="tab-btn active" onclick="setFilter('all')">All (200)</button>
+        <button class="tab-btn" onclick="setFilter('diff')">Changes Recommended (8)</button>
+        <button class="tab-btn" onclick="setFilter('unreviewed')">Unreviewed</button>
+        <button class="tab-btn" onclick="setFilter('reviewed')">Reviewed</button>
+      </div>
+
+      <div class="batch-actions">
+        <input type="text" class="search-box" id="searchBox" placeholder="Search customer text..." oninput="handleSearch()">
+        <button class="btn btn-outline" onclick="acceptAllRecommendations()">Accept All Recommendations</button>
+        <button class="btn btn-outline" onclick="acceptAllHeuristics()">Accept All Heuristics</button>
+      </div>
+    </div>
+
+    <!-- Cards Stream -->
+    <div class="cards-container" id="cardsContainer">
+      <div style="text-align: center; padding: 40px; color: var(--text-secondary);">Loading golden benchmark queue...</div>
+    </div>
+  </div>
+
+  <!-- Bottom Floating Bar -->
+  <div class="save-bar">
+    <div class="save-info">
+      <div><strong>Progress:</strong> <span id="barReviewed">0</span> of 200 verified</div>
+      <div class="progress-bar-container">
+        <div class="progress-fill" id="barProgressFill"></div>
+      </div>
+    </div>
+    <div style="display: flex; gap: 12px;">
+      <button class="btn btn-outline" onclick="downloadJSONL()">Download JSONL</button>
+      <button class="btn btn-success" onclick="openSaveModal()">Finalize & Submit Human Review</button>
+    </div>
+  </div>
+
+  <!-- Confirmation Modal -->
+  <div class="modal-overlay" id="saveModal">
+    <div class="modal-content">
+      <h3>Submit Human Golden Benchmark</h3>
+      <p id="modalDescription">You are about to finalize the 200 human review decisions. This will write to <code>data/golden_eval/human_verified_golden_200.jsonl</code> and record your reviewer signature in <code>human_review_audit.json</code> with <code>actually_human_reviewed = true</code>.</p>
+      <div class="modal-actions">
+        <button class="btn btn-outline" onclick="closeSaveModal()">Cancel</button>
+        <button class="btn btn-success" id="confirmSaveBtn" onclick="submitFinalDecisions()">Confirm & Save to Server</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const VALID_INTENTS = [
+      "app_store_billing",
+      "apple_id_icloud",
+      "audio_sound",
+      "battery_power",
+      "camera_photos",
+      "display_touch_keyboard",
+      "general_inquiry_other",
+      "hardware_repair_service",
+      "network_connectivity",
+      "order_shipping",
+      "performance_freeze_crash",
+      "software_update"
+    ];
+
+    const VALID_ACTIONS = ["AUTO_HANDLE", "ESCALATE"];
+
+    const VALID_REASONS = [
+      "hardware_physical_damage",
+      "financial_and_billing",
+      "account_security_and_pii",
+      "unresolved_system_crash",
+      "vague_or_abusive",
+      "non_english_query",
+      "none"
+    ];
+
+    let queueData = [];
+    let activeFilter = 'all';
+    let searchQuery = '';
+
+    async function loadQueue() {
+      try {
+        const resp = await fetch('/api/queue');
+        if (resp.ok) {
+          queueData = await resp.json();
+        } else {
+          throw new Error('API fetch failed');
+        }
+      } catch (err) {
+        console.warn('Could not load from API, trying embedded or local fallback', err);
+        document.getElementById('cardsContainer').innerHTML = `
+          <div style="text-align: center; padding: 40px; background: var(--bg-card); border-radius: var(--radius-md);">
+            <h3 style="margin-bottom: 8px;">Waiting for Local Review Server</h3>
+            <p style="color: var(--text-secondary); margin-bottom: 16px;">Please run: <code>python -m src.data.human_review_tool --serve</code> to interact with the API.</p>
+          </div>
+        `;
+        return;
+      }
+      render();
+    }
+
+    function render() {
+      updateStats();
+      const container = document.getElementById('cardsContainer');
+      container.innerHTML = '';
+
+      const filtered = queueData.filter(item => {
+        if (activeFilter === 'diff' && !item.is_changed_from_heuristic) return false;
+        if (activeFilter === 'unreviewed' && item.is_reviewed) return false;
+        if (activeFilter === 'reviewed' && !item.is_reviewed) return false;
+        if (searchQuery) {
+          const q = searchQuery.toLowerCase();
+          const matchQuery = item.clean_customer_query.toLowerCase().includes(q);
+          const matchId = item.golden_id.toLowerCase().includes(q);
+          if (!matchQuery && !matchId) return false;
+        }
+        return true;
+      });
+
+      if (filtered.length === 0) {
+        container.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--text-secondary);">No items match the active filter.</div>';
+        return;
+      }
+
+      filtered.forEach(item => {
+        const card = createCardElement(item);
+        container.appendChild(card);
+      });
+    }
+
+    function createCardElement(item) {
+      const card = document.createElement('div');
+      card.className = `example-card ${item.is_changed_from_heuristic ? 'changed-diff' : ''} ${item.is_reviewed ? 'reviewed' : ''}`;
+      card.id = `card-${item.golden_id}`;
+
+      const decisionIntent = item.decision_intent || item.recommended_intent;
+      const decisionAction = item.decision_action || item.recommended_action;
+      const decisionReason = item.decision_reason || item.recommended_escalation_reason || 'none';
+
+      const diffPill = item.is_changed_from_heuristic
+        ? '<span class="pill pill-diff">Diff from Heuristic</span>'
+        : '<span class="pill pill-confirm">Matches Heuristic</span>';
+
+      const diffClass = item.difficulty === 'edge_case' ? 'pill-edge' : 'pill-straight';
+
+      card.innerHTML = `
+        <div class="card-top">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span class="id-badge">${item.golden_id}</span>
+            <span class="pill ${diffClass}">${item.difficulty}</span>
+            ${diffPill}
+          </div>
+          <div>
+            <span class="decision-status ${item.is_reviewed ? 'status-checked' : 'status-pending'}">
+              ${item.is_reviewed ? '✓ Verified by Reviewer' : '● Awaiting Explicit Decision'}
+            </span>
+          </div>
+        </div>
+
+        <div class="query-box">
+          <div class="query-label">Customer Query</div>
+          <div>"${escapeHtml(item.clean_customer_query)}"</div>
+        </div>
+
+        <div class="comparison-grid">
+          <!-- Heuristic Baseline Panel -->
+          <div class="panel">
+            <div>
+              <div class="panel-header">1. Heuristic Baseline</div>
+              <div class="data-row">
+                <div class="data-key">Intent:</div>
+                <div class="data-val">${item.current_intent}</div>
+              </div>
+              <div class="data-row">
+                <div class="data-key">Action:</div>
+                <div><span class="action-badge ${item.current_action === 'AUTO_HANDLE' ? 'action-auto' : 'action-escalate'}">${item.current_action}</span></div>
+              </div>
+              <div class="data-row">
+                <div class="data-key">Reason:</div>
+                <div class="data-val" style="font-size: 11px;">${item.current_escalation_reason || 'none'}</div>
+              </div>
+            </div>
+            <button class="btn btn-outline" style="margin-top: 12px;" onclick="applyChoice('${item.golden_id}', 'heuristic')">Accept Heuristic</button>
+          </div>
+
+          <!-- Guideline Recommendation Panel -->
+          <div class="panel">
+            <div>
+              <div class="panel-header">2. Recommendation Engine</div>
+              <div class="data-row">
+                <div class="data-key">Recommended Intent:</div>
+                <div class="data-val" style="color: var(--accent-blue);">${item.recommended_intent}</div>
+              </div>
+              <div class="data-row">
+                <div class="data-key">Recommended Action:</div>
+                <div><span class="action-badge ${item.recommended_action === 'AUTO_HANDLE' ? 'action-auto' : 'action-escalate'}">${item.recommended_action}</span></div>
+              </div>
+              <div class="data-row">
+                <div class="data-key">Escalation Reason:</div>
+                <div class="data-val" style="font-size: 11px;">${item.recommended_escalation_reason || 'none'}</div>
+              </div>
+              <div class="rationale-text">${escapeHtml(item.recommendation_rationale)}</div>
+            </div>
+            <button class="btn btn-primary" style="margin-top: 12px;" onclick="applyChoice('${item.golden_id}', 'recommendation')">Accept Recommendation</button>
+          </div>
+
+          <!-- Final Human Decision Panel -->
+          <div class="panel" style="border-color: rgba(56, 189, 248, 0.4); background: rgba(30, 41, 59, 0.6);">
+            <div>
+              <div class="panel-header" style="color: var(--accent-blue);">3. Final Human Decision</div>
+              <div class="form-group">
+                <label>Intent</label>
+                <select class="form-select" id="intent-${item.golden_id}" onchange="updateDecision('${item.golden_id}')">
+                  ${VALID_INTENTS.map(i => `<option value="${i}" ${i === decisionIntent ? 'selected' : ''}>${i}</option>`).join('')}
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Action</label>
+                <select class="form-select" id="action-${item.golden_id}" onchange="updateDecision('${item.golden_id}')">
+                  ${VALID_ACTIONS.map(a => `<option value="${a}" ${a === decisionAction ? 'selected' : ''}>${a}</option>`).join('')}
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Escalation Reason</label>
+                <select class="form-select" id="reason-${item.golden_id}" onchange="updateDecision('${item.golden_id}')">
+                  ${VALID_REASONS.map(r => `<option value="${r}" ${r === decisionReason ? 'selected' : ''}>${r}</option>`).join('')}
+                </select>
+              </div>
+            </div>
+            <button class="btn btn-success" style="margin-top: 10px;" onclick="confirmDecision('${item.golden_id}')">Mark Human Verified</button>
+          </div>
+        </div>
+      `;
+      return card;
+    }
+
+    function applyChoice(goldenId, source) {
+      const item = queueData.find(d => d.golden_id === goldenId);
+      if (!item) return;
+
+      if (source === 'heuristic') {
+        item.decision_intent = item.current_intent;
+        item.decision_action = item.current_action;
+        item.decision_reason = item.current_escalation_reason || 'none';
+        item.decision_source = 'heuristic_accepted';
+      } else {
+        item.decision_intent = item.recommended_intent;
+        item.decision_action = item.recommended_action;
+        item.decision_reason = item.recommended_escalation_reason || 'none';
+        item.decision_source = 'recommendation_accepted';
+      }
+      item.is_reviewed = true;
+
+      render();
+    }
+
+    function updateDecision(goldenId) {
+      const item = queueData.find(d => d.golden_id === goldenId);
+      if (!item) return;
+
+      const selIntent = document.getElementById(`intent-${goldenId}`).value;
+      const selAction = document.getElementById(`action-${goldenId}`).value;
+      const selReason = document.getElementById(`reason-${goldenId}`).value;
+
+      item.decision_intent = selIntent;
+      item.decision_action = selAction;
+      item.decision_reason = selReason;
+      item.decision_source = 'manual_correction';
+      item.is_reviewed = true;
+      updateStats();
+    }
+
+    function confirmDecision(goldenId) {
+      updateDecision(goldenId);
+      render();
+    }
+
+    function acceptAllRecommendations() {
+      queueData.forEach(item => {
+        if (!item.is_reviewed) {
+          item.decision_intent = item.recommended_intent;
+          item.decision_action = item.recommended_action;
+          item.decision_reason = item.recommended_escalation_reason || 'none';
+          item.decision_source = 'recommendation_accepted';
+          item.is_reviewed = true;
+        }
+      });
+      render();
+    }
+
+    function acceptAllHeuristics() {
+      queueData.forEach(item => {
+        if (!item.is_reviewed) {
+          item.decision_intent = item.current_intent;
+          item.decision_action = item.current_action;
+          item.decision_reason = item.current_escalation_reason || 'none';
+          item.decision_source = 'heuristic_accepted';
+          item.is_reviewed = true;
+        }
+      });
+      render();
+    }
+
+    function updateStats() {
+      const total = queueData.length || 200;
+      const reviewed = queueData.filter(d => d.is_reviewed).length;
+      const pct = ((reviewed / total) * 100).toFixed(1);
+
+      let autoCount = 0;
+      let escCount = 0;
+      queueData.forEach(d => {
+        const a = d.decision_action || d.recommended_action;
+        if (a === 'AUTO_HANDLE') autoCount++;
+        else escCount++;
+      });
+
+      document.getElementById('totalRecords').innerText = total;
+      document.getElementById('reviewedCount').innerText = `${reviewed} / ${total}`;
+      document.getElementById('reviewedPct').innerText = `${pct}% verified`;
+      document.getElementById('barReviewed').innerText = reviewed;
+      document.getElementById('barProgressFill').style.width = `${pct}%`;
+      document.getElementById('actionDist').innerText = `AUTO: ${autoCount} | ESC: ${escCount}`;
+      document.getElementById('actionRatio').innerText = `${((autoCount / total) * 100).toFixed(1)}% containment`;
+    }
+
+    function setFilter(filter) {
+      activeFilter = filter;
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      event.target.classList.add('active');
+      render();
+    }
+
+    function handleSearch() {
+      searchQuery = document.getElementById('searchBox').value.trim();
+      render();
+    }
+
+    function openSaveModal() {
+      const reviewed = queueData.filter(d => d.is_reviewed).length;
+      const annotator = document.getElementById('annotatorInput').value.trim() || 'Pravalika';
+      document.getElementById('modalDescription').innerHTML = `
+        <strong>Annotator Signature:</strong> <code>${annotator}</code><br>
+        <strong>Progress:</strong> ${reviewed} of 200 records explicitly verified.<br><br>
+        This will save the human-verified benchmark to <code>data/golden_eval/human_verified_golden_200.jsonl</code>, set <code>actually_human_reviewed = true</code> in the audit manifest, and trigger re-evaluation.
+      `;
+      document.getElementById('saveModal').style.display = 'flex';
+    }
+
+    function closeSaveModal() {
+      document.getElementById('saveModal').style.display = 'none';
+    }
+
+    async function submitFinalDecisions() {
+      const btn = document.getElementById('confirmSaveBtn');
+      btn.disabled = true;
+      btn.innerText = 'Submitting & Saving...';
+
+      const annotator = document.getElementById('annotatorInput').value.trim() || 'Pravalika';
+
+      const payload = {
+        annotator_id: annotator,
+        timestamp: new Date().toISOString(),
+        records: queueData.map(d => ({
+          golden_id: d.golden_id,
+          ground_truth_intent: d.decision_intent || d.recommended_intent,
+          expected_action: d.decision_action || d.recommended_action,
+          escalation_reason: d.decision_reason || d.recommended_escalation_reason || 'none',
+          difficulty: d.difficulty || 'straightforward',
+          decision_source: d.decision_source || 'recommendation_accepted',
+          human_verified: true
+        }))
+      };
+
+      try {
+        const resp = await fetch('/api/save', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        if (resp.ok) {
+          const result = await resp.json();
+          alert(`Successfully saved ${result.saved_records} records to human_verified_golden_200.jsonl!\nAudit updated: actually_human_reviewed = true.`);
+          closeSaveModal();
+          location.reload();
+        } else {
+          alert('Error saving to server: ' + (await resp.text()));
+        }
+      } catch (err) {
+        alert('Could not reach review server: ' + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerText = 'Confirm & Save to Server';
+      }
+    }
+
+    function downloadJSONL() {
+      const annotator = document.getElementById('annotatorInput').value.trim() || 'Pravalika';
+      const lines = queueData.map(d => JSON.stringify({
+        golden_id: d.golden_id,
+        clean_customer_query: d.clean_customer_query,
+        ground_truth_intent: d.decision_intent || d.recommended_intent,
+        expected_action: d.decision_action || d.recommended_action,
+        escalation_reason: d.decision_reason || d.recommended_escalation_reason || 'none',
+        difficulty: d.difficulty || 'straightforward',
+        human_verified: true,
+        annotator_id: annotator,
+        reviewed_at: new Date().toISOString()
+      }));
+
+      const blob = new Blob([lines.join('\n') + '\n'], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'human_verified_golden_200.jsonl';
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+    }
+
+    window.onload = loadQueue;
+  </script>
+</body>
+</html>

@@ -1,0 +1,839 @@
+{
+  "evaluation_audit": {
+    "timestamp": "2026-09-09T13:19:52.216137+00:00",
+    "total_golden_records": 200,
+    "number_reviewed": 200,
+    "number_changed": 7,
+    "number_unchanged": 193,
+    "percent_changed": 3.5,
+    "reviewer_status": {
+      "reviewer_id": "Pravalika",
+      "actually_human_reviewed": true,
+      "audit_disclosure": "Human-reviewed and verified by the project author (Pravalika)"
+    },
+    "final_intent_distribution": {
+      "app_store_billing": 13,
+      "display_touch_keyboard": 20,
+      "audio_sound": 18,
+      "performance_freeze_crash": 18,
+      "apple_id_icloud": 16,
+      "battery_power": 17,
+      "camera_photos": 17,
+      "general_inquiry_other": 16,
+      "hardware_repair_service": 17,
+      "network_connectivity": 16,
+      "order_shipping": 16,
+      "software_update": 16
+    },
+    "final_action_distribution": {
+      "AUTO_HANDLE": 140,
+      "ESCALATE": 60
+    },
+    "sample_modifications": [
+      {
+        "golden_id": "GOLDEN_002",
+        "query": "Ever since I upgraded to High Sierra, my media controls on the keyboard don\u2019t wo",
+        "orig_intent": "app_store_billing",
+        "new_intent": "display_touch_keyboard",
+        "orig_action": "ESCALATE",
+        "new_action": "AUTO_HANDLE"
+      },
+      {
+        "golden_id": "GOLDEN_003",
+        "query": "Neither iPhone alarm went off this morning, had to make a 5:30 AM flight. The 2a",
+        "orig_intent": "app_store_billing",
+        "new_intent": "audio_sound",
+        "orig_action": "ESCALATE",
+        "new_action": "ESCALATE"
+      },
+      {
+        "golden_id": "GOLDEN_006",
+        "query": "My Apple Watch keeps turning off and on by itself and it\u2019s charged. What do I do",
+        "orig_intent": "app_store_billing",
+        "new_intent": "performance_freeze_crash",
+        "orig_action": "ESCALATE",
+        "new_action": "AUTO_HANDLE"
+      },
+      {
+        "golden_id": "GOLDEN_009",
+        "query": "Easily worst purchase I\u2019ve made is @115858 \u2018s iPhone 8+. Either that or just the",
+        "orig_intent": "app_store_billing",
+        "new_intent": "performance_freeze_crash",
+        "orig_action": "ESCALATE",
+        "new_action": "AUTO_HANDLE"
+      },
+      {
+        "golden_id": "GOLDEN_028",
+        "query": "hi apple! How am I supposed to enter my password when my number keyboard refuses",
+        "orig_intent": "apple_id_icloud",
+        "new_intent": "display_touch_keyboard",
+        "orig_action": "ESCALATE",
+        "new_action": "AUTO_HANDLE"
+      },
+      {
+        "golden_id": "GOLDEN_048",
+        "query": "MY PHONE WONT FUCKING GO OFF HEADPHONE MODE @AppleSupport thoughts?",
+        "orig_intent": "audio_sound",
+        "new_intent": "audio_sound",
+        "orig_action": "AUTO_HANDLE",
+        "new_action": "ESCALATE"
+      },
+      {
+        "golden_id": "GOLDEN_105",
+        "query": "what\u2019s up with the letter \u201ci\u201d man? pls fix. i\u2019m annoyed. @115858 @AppleSupport",
+        "orig_intent": "general_inquiry_other",
+        "new_intent": "display_touch_keyboard",
+        "orig_action": "ESCALATE",
+        "new_action": "AUTO_HANDLE"
+      }
+    ]
+  },
+  "heuristic_baseline_metrics": {
+    "dataset_size": 200,
+    "intent_classification": {
+      "overall_accuracy": 0.64,
+      "macro_f1": 0.6397,
+      "weighted_f1": 0.6409,
+      "per_intent": {
+        "app_store_billing": {
+          "precision": 0.5263,
+          "recall": 0.5882,
+          "f1": 0.5556,
+          "support": 17
+        },
+        "apple_id_icloud": {
+          "precision": 0.7647,
+          "recall": 0.7647,
+          "f1": 0.7647,
+          "support": 17
+        },
+        "audio_sound": {
+          "precision": 0.7222,
+          "recall": 0.7647,
+          "f1": 0.7429,
+          "support": 17
+        },
+        "battery_power": {
+          "precision": 0.9375,
+          "recall": 0.8824,
+          "f1": 0.9091,
+          "support": 17
+        },
+        "camera_photos": {
+          "precision": 0.7143,
+          "recall": 0.8824,
+          "f1": 0.7895,
+          "support": 17
+        },
+        "display_touch_keyboard": {
+          "precision": 0.5238,
+          "recall": 0.6471,
+          "f1": 0.5789,
+          "support": 17
+        },
+        "general_inquiry_other": {
+          "precision": 0.3043,
+          "recall": 0.4118,
+          "f1": 0.35,
+          "support": 17
+        },
+        "hardware_repair_service": {
+          "precision": 0.6875,
+          "recall": 0.6471,
+          "f1": 0.6667,
+          "support": 17
+        },
+        "network_connectivity": {
+          "precision": 0.6471,
+          "recall": 0.6875,
+          "f1": 0.6667,
+          "support": 16
+        },
+        "order_shipping": {
+          "precision": 1.0,
+          "recall": 0.5,
+          "f1": 0.6667,
+          "support": 16
+        },
+        "performance_freeze_crash": {
+          "precision": 0.3636,
+          "recall": 0.25,
+          "f1": 0.2963,
+          "support": 16
+        },
+        "software_update": {
+          "precision": 0.7692,
+          "recall": 0.625,
+          "f1": 0.6897,
+          "support": 16
+        }
+      }
+    },
+    "escalation_policy": {
+      "decision_accuracy": 0.72,
+      "escalation_precision": 0.5377,
+      "escalation_recall": 0.8906,
+      "escalation_f1": 0.6706,
+      "confusion_matrix": {
+        "true_auto_handle_tn": 87,
+        "over_escalated_fp": 49,
+        "missed_escalate_fn": 7,
+        "true_escalate_tp": 57
+      }
+    },
+    "retrieval_and_reply_quality": {
+      "top1_retrieval_relevance_rate": 0.5,
+      "grounded_response_rate": 0.705,
+      "provenance_integrity_rate": 0.705,
+      "appropriate_abstention_rate": 0.295,
+      "unsafe_or_context_bound_reply_rate": 0.0,
+      "context_bound_candidates_rejected": 26
+    },
+    "top_5_real_failures": [
+      {
+        "golden_id": "GOLDEN_003",
+        "customer_query": "Neither iPhone alarm went off this morning, had to make a 5:30 AM flight. The 2am alarm on one phone finally went off at 5:40 on it's own. United just charged $640 per person to get on a later flight today \ud83d\ude20 @AppleSupport",
+        "predicted_intent": "audio_sound",
+        "predicted_action": "AUTO_HANDLE",
+        "expected_intent": "app_store_billing",
+        "expected_action": "ESCALATE",
+        "confidence": 0.1834,
+        "escalation_reason": "none",
+        "grounding_status": "grounded",
+        "retrieved_evidence": [
+          {
+            "rank": 1,
+            "similarity_score": 0.5464,
+            "historical_intent": "audio_sound",
+            "matched_query": "My worst fear came true... my iPhone alarm isn\u2019t working and never went off this morning @AppleSuppo",
+            "agent_reply": "@121044 Hello. We are here to help. Has this happened previously. Also, what is your iOS version?"
+          },
+          {
+            "rank": 2,
+            "similarity_score": 0.53,
+            "historical_intent": "battery_power",
+            "matched_query": "My phone died at 10:30am this morning. I woke up at 6:30am with a full charge. Literally wtf @AppleS",
+            "agent_reply": "@126348 We want to help. Tell us more about what's happening in DM. https://t.co/GDrqU22YpT"
+          }
+        ],
+        "why_it_failed": "Missed Escalation (Safety False Negative): The customer experienced a severe alarm failure that caused a missed flight and an immediate $640 airline rebooking penalty. Because the classifier predicted 'audio_sound' (confidence 0.18) and the text lacked physical hardware danger or explicit profanity, the policy treated it as a routine alarm troubleshooting issue and auto-handled it rather than escalating for human customer relations and damage mitigation.",
+        "improvement_hypothesis": "Implement an emotional distress and consequential financial loss detector (e.g., regex/sentiment triggers capturing 'charged $', 'missed flight', 'emergency') to enforce mandatory human escalation whenever software bugs cause substantial real-world harm."
+      },
+      {
+        "golden_id": "GOLDEN_001",
+        "customer_query": "why are my App Store categories in Spanish but everything else in English??",
+        "predicted_intent": "app_store_billing",
+        "predicted_action": "ESCALATE",
+        "expected_intent": "app_store_billing",
+        "expected_action": "ESCALATE",
+        "confidence": 0.197,
+        "escalation_reason": "financial_and_billing",
+        "grounding_status": "insufficient_evidence",
+        "retrieved_evidence": [
+          {
+            "rank": 1,
+            "similarity_score": 0.4074,
+            "historical_intent": "general_inquiry_other",
+            "matched_query": "I\ufe0f can\u2019t believe that @115858 & @AppleSupport has not fixed the vowel text issue. It\u2019s very annoying",
+            "agent_reply": "@117460 We'd like to look into the trouble you're having. Does this only occur in the Facebook app?"
+          },
+          {
+            "rank": 2,
+            "similarity_score": 0.404,
+            "historical_intent": "general_inquiry_other",
+            "matched_query": "Baje la App de @701 la cual es gratuita y me llego un cargo de $18.11 Pesos \u00bfcu\u00e1l es el motivo?",
+            "agent_reply": "@117964 We offer support via Twitter in English. Get help in Spanish here: https://t.co/IBIY3vMgPj or join https://t.co/"
+          }
+        ],
+        "why_it_failed": "Retrieval Coverage Gap (Low Similarity Abstention): The customer asked why App Store categories appeared in Spanish while the rest of iOS remained in English. The classifier correctly predicted 'app_store_billing', but the 800-thread historical corpus lacked regional storefront or language localization cases (top similarity was 0.407, below the 0.45 threshold). Rather than inventing unverified troubleshooting steps, the agent safely abstained and escalated.",
+        "improvement_hypothesis": "Expand the historical support retrieval index from 800 conversations to 10,000+ interactions to guarantee dense coverage of regional App Store storefronts, language localization glitches, and multi-lingual account configurations."
+      },
+      {
+        "golden_id": "GOLDEN_002",
+        "customer_query": "Ever since I upgraded to High Sierra, my media controls on the keyboard don\u2019t work with iTunes. Please help or fix it @AppleSupport",
+        "predicted_intent": "display_touch_keyboard",
+        "predicted_action": "ESCALATE",
+        "expected_intent": "app_store_billing",
+        "expected_action": "ESCALATE",
+        "confidence": 0.2226,
+        "escalation_reason": "insufficient_grounding",
+        "grounding_status": "insufficient_evidence",
+        "retrieved_evidence": [
+          {
+            "rank": 1,
+            "similarity_score": 0.5524,
+            "historical_intent": "app_store_billing",
+            "matched_query": "upgraded to 11.1.2 and iTunes Player won\u2019t work on iPhone 7. ANNOYING",
+            "agent_reply": "@121048 Let\u2019s work together to get this resolved. To be sure we\u2019re on the same page, are you noticing and issue with the"
+          },
+          {
+            "rank": 2,
+            "similarity_score": 0.4764,
+            "historical_intent": "general_inquiry_other",
+            "matched_query": "And why is my music NEVER in my control center?! @AppleSupport",
+            "agent_reply": "@116338 We're here to help out! Which device is this on and which version of iOS is currently installed?"
+          }
+        ],
+        "why_it_failed": "Intent Mismatch Gate Disqualification: Query spans macOS upgrade, physical keyboard media controls, and iTunes. The linear classifier predicted 'display_touch_keyboard' (confidence 0.22), whereas the top dense retrieval match was classified as 'app_store_billing' (score 0.552). Because intent concordance was enforced to prevent cross-domain hallucinations, the candidate was disqualified, and the agent safely abstained.",
+        "improvement_hypothesis": "Implement multi-label intent prediction and allow evidence retrieval across the top-2 predicted intent classes when confidence scores are closely distributed, recovering multi-faceted OS/app interactions without relaxing safety constraints."
+      },
+      {
+        "golden_id": "GOLDEN_018",
+        "customer_query": "Hello @AppleSupport @118721 A friend of mine has trouble. He paid for a Swiss National Anthem file, sung by Red Army Choir: (Russian famous choir) and iTunes deleted the file from the library & iCloud. How it is possible? cc @141099",
+        "predicted_intent": "apple_id_icloud",
+        "predicted_action": "ESCALATE",
+        "expected_intent": "apple_id_icloud",
+        "expected_action": "AUTO_HANDLE",
+        "confidence": 0.1506,
+        "escalation_reason": "insufficient_grounding",
+        "grounding_status": "insufficient_evidence",
+        "retrieved_evidence": [
+          {
+            "rank": 1,
+            "similarity_score": 0.5473,
+            "historical_intent": "app_store_billing",
+            "matched_query": "i bought a song from Little Mix new album but when I go to my library is not even there like I didn\u2019",
+            "agent_reply": "@143663 We can help. Check out the section \"Redownload a song, album, or music video\" here: https://t.co/I39AyMJNgb\n\nLet"
+          },
+          {
+            "rank": 2,
+            "similarity_score": 0.5133,
+            "historical_intent": "app_store_billing",
+            "matched_query": "hi there, I sent an iTunes gift for my friend. This morning he lost it with no reason and can\u2019t find",
+            "agent_reply": "@144022 Hi. We are here to help. Check out this link for steps to resend your gift:\nhttps://t.co/dmWUqgVYdP"
+          }
+        ],
+        "why_it_failed": "Precautionary Over-Escalation (False Positive): A customer sought assistance on behalf of a friend with account troubles. While ground truth classified it as standard self-service ('AUTO_HANDLE'), the agent failed closed ('ESCALATE') due to insufficient grounding in the training corpus for third-party advocacy scenarios.",
+        "improvement_hypothesis": "Add dedicated third-party inquiry handling templates (directing the user to have the primary account holder contact Apple Support with device verification) to resolve third-party queries safely without unnecessarily routing to human agent queues."
+      },
+      {
+        "golden_id": "GOLDEN_006",
+        "customer_query": "My Apple Watch keeps turning off and on by itself and it\u2019s charged. What do I do?",
+        "predicted_intent": "network_connectivity",
+        "predicted_action": "ESCALATE",
+        "expected_intent": "app_store_billing",
+        "expected_action": "ESCALATE",
+        "confidence": 0.1313,
+        "escalation_reason": "insufficient_grounding",
+        "grounding_status": "insufficient_evidence",
+        "retrieved_evidence": [
+          {
+            "rank": 1,
+            "similarity_score": 0.5542,
+            "historical_intent": "battery_power",
+            "matched_query": "hi, I have a problem with my macbook pro, it won't turn on, I think it might be the charger but not ",
+            "agent_reply": "@116340 We can help. Let\u2019s start with the following steps to see if we can save you a trip in for service: https://t.co/"
+          },
+          {
+            "rank": 2,
+            "similarity_score": 0.537,
+            "historical_intent": "performance_freeze_crash",
+            "matched_query": "my phone was acting up. I then restarted it and now all it does is stay on the apple logo when I tur",
+            "agent_reply": "@119216 We\u2019ve got your back. Let us know if the steps in this article help with your iPhone: https://t.co/8MvHMFZ83h"
+          }
+        ],
+        "why_it_failed": "Multi-Symptom Classifier Boundary Confusion: The customer reported an Apple Watch spontaneously rebooting despite being fully charged. The query conflates battery charging ('it\u2019s charged') with reboot loops ('keeps turning off and on'). The linear classifier predicted 'network_connectivity', which clashed with the retrieved 'battery_power' historical record (score 0.554), triggering an intent gate disqualification.",
+        "improvement_hypothesis": "Replace linear bag-of-words classification with a fine-tuned dense intent classifier (e.g., SetFit or MiniLM) that captures multi-token symptom semantics and handles rebooting hardware descriptions accurately."
+      }
+    ]
+  },
+  "machine_recommendation_metrics": {
+    "dataset_size": 200,
+    "intent_classification": {
+      "overall_accuracy": 0.655,
+      "macro_f1": 0.6547,
+      "weighted_f1": 0.6549,
+      "per_intent": {
+        "app_store_billing": {
+          "precision": 0.5263,
+          "recall": 0.7692,
+          "f1": 0.625,
+          "support": 13
+        },
+        "apple_id_icloud": {
+          "precision": 0.7059,
+          "recall": 0.75,
+          "f1": 0.7273,
+          "support": 16
+        },
+        "audio_sound": {
+          "precision": 0.7778,
+          "recall": 0.7778,
+          "f1": 0.7778,
+          "support": 18
+        },
+        "battery_power": {
+          "precision": 0.9375,
+          "recall": 0.8824,
+          "f1": 0.9091,
+          "support": 17
+        },
+        "camera_photos": {
+          "precision": 0.7143,
+          "recall": 0.8824,
+          "f1": 0.7895,
+          "support": 17
+        },
+        "display_touch_keyboard": {
+          "precision": 0.619,
+          "recall": 0.65,
+          "f1": 0.6341,
+          "support": 20
+        },
+        "general_inquiry_other": {
+          "precision": 0.3043,
+          "recall": 0.4375,
+          "f1": 0.359,
+          "support": 16
+        },
+        "hardware_repair_service": {
+          "precision": 0.6875,
+          "recall": 0.6471,
+          "f1": 0.6667,
+          "support": 17
+        },
+        "network_connectivity": {
+          "precision": 0.6471,
+          "recall": 0.6875,
+          "f1": 0.6667,
+          "support": 16
+        },
+        "order_shipping": {
+          "precision": 1.0,
+          "recall": 0.5,
+          "f1": 0.6667,
+          "support": 16
+        },
+        "performance_freeze_crash": {
+          "precision": 0.4545,
+          "recall": 0.2778,
+          "f1": 0.3448,
+          "support": 18
+        },
+        "software_update": {
+          "precision": 0.7692,
+          "recall": 0.625,
+          "f1": 0.6897,
+          "support": 16
+        }
+      }
+    },
+    "escalation_policy": {
+      "decision_accuracy": 0.7,
+      "escalation_precision": 0.5,
+      "escalation_recall": 0.8833,
+      "escalation_f1": 0.6386,
+      "confusion_matrix": {
+        "true_auto_handle_tn": 87,
+        "over_escalated_fp": 53,
+        "missed_escalate_fn": 7,
+        "true_escalate_tp": 53
+      }
+    },
+    "retrieval_and_reply_quality": {
+      "top1_retrieval_relevance_rate": 0.5,
+      "grounded_response_rate": 0.705,
+      "provenance_integrity_rate": 0.705,
+      "appropriate_abstention_rate": 0.295,
+      "unsafe_or_context_bound_reply_rate": 0.0,
+      "context_bound_candidates_rejected": 26
+    },
+    "top_5_real_failures": [
+      {
+        "golden_id": "GOLDEN_003",
+        "customer_query": "Neither iPhone alarm went off this morning, had to make a 5:30 AM flight. The 2am alarm on one phone finally went off at 5:40 on it's own. United just charged $640 per person to get on a later flight today \ud83d\ude20 @AppleSupport",
+        "predicted_intent": "audio_sound",
+        "predicted_action": "AUTO_HANDLE",
+        "expected_intent": "audio_sound",
+        "expected_action": "ESCALATE",
+        "confidence": 0.1834,
+        "escalation_reason": "none",
+        "grounding_status": "grounded",
+        "retrieved_evidence": [
+          {
+            "rank": 1,
+            "similarity_score": 0.5464,
+            "historical_intent": "audio_sound",
+            "matched_query": "My worst fear came true... my iPhone alarm isn\u2019t working and never went off this morning @AppleSuppo",
+            "agent_reply": "@121044 Hello. We are here to help. Has this happened previously. Also, what is your iOS version?"
+          },
+          {
+            "rank": 2,
+            "similarity_score": 0.53,
+            "historical_intent": "battery_power",
+            "matched_query": "My phone died at 10:30am this morning. I woke up at 6:30am with a full charge. Literally wtf @AppleS",
+            "agent_reply": "@126348 We want to help. Tell us more about what's happening in DM. https://t.co/GDrqU22YpT"
+          }
+        ],
+        "why_it_failed": "Missed Escalation (Safety False Negative): The customer experienced a severe alarm failure that caused a missed flight and an immediate $640 airline rebooking penalty. Because the classifier predicted 'audio_sound' (confidence 0.18) and the text lacked physical hardware danger or explicit profanity, the policy treated it as a routine alarm troubleshooting issue and auto-handled it rather than escalating for human customer relations and damage mitigation.",
+        "improvement_hypothesis": "Implement an emotional distress and consequential financial loss detector (e.g., regex/sentiment triggers capturing 'charged $', 'missed flight', 'emergency') to enforce mandatory human escalation whenever software bugs cause substantial real-world harm."
+      },
+      {
+        "golden_id": "GOLDEN_001",
+        "customer_query": "why are my App Store categories in Spanish but everything else in English??",
+        "predicted_intent": "app_store_billing",
+        "predicted_action": "ESCALATE",
+        "expected_intent": "app_store_billing",
+        "expected_action": "ESCALATE",
+        "confidence": 0.197,
+        "escalation_reason": "financial_and_billing",
+        "grounding_status": "insufficient_evidence",
+        "retrieved_evidence": [
+          {
+            "rank": 1,
+            "similarity_score": 0.4074,
+            "historical_intent": "general_inquiry_other",
+            "matched_query": "I\ufe0f can\u2019t believe that @115858 & @AppleSupport has not fixed the vowel text issue. It\u2019s very annoying",
+            "agent_reply": "@117460 We'd like to look into the trouble you're having. Does this only occur in the Facebook app?"
+          },
+          {
+            "rank": 2,
+            "similarity_score": 0.404,
+            "historical_intent": "general_inquiry_other",
+            "matched_query": "Baje la App de @701 la cual es gratuita y me llego un cargo de $18.11 Pesos \u00bfcu\u00e1l es el motivo?",
+            "agent_reply": "@117964 We offer support via Twitter in English. Get help in Spanish here: https://t.co/IBIY3vMgPj or join https://t.co/"
+          }
+        ],
+        "why_it_failed": "Retrieval Coverage Gap (Low Similarity Abstention): The customer asked why App Store categories appeared in Spanish while the rest of iOS remained in English. The classifier correctly predicted 'app_store_billing', but the 800-thread historical corpus lacked regional storefront or language localization cases (top similarity was 0.407, below the 0.45 threshold). Rather than inventing unverified troubleshooting steps, the agent safely abstained and escalated.",
+        "improvement_hypothesis": "Expand the historical support retrieval index from 800 conversations to 10,000+ interactions to guarantee dense coverage of regional App Store storefronts, language localization glitches, and multi-lingual account configurations."
+      },
+      {
+        "golden_id": "GOLDEN_002",
+        "customer_query": "Ever since I upgraded to High Sierra, my media controls on the keyboard don\u2019t work with iTunes. Please help or fix it @AppleSupport",
+        "predicted_intent": "display_touch_keyboard",
+        "predicted_action": "ESCALATE",
+        "expected_intent": "display_touch_keyboard",
+        "expected_action": "AUTO_HANDLE",
+        "confidence": 0.2226,
+        "escalation_reason": "insufficient_grounding",
+        "grounding_status": "insufficient_evidence",
+        "retrieved_evidence": [
+          {
+            "rank": 1,
+            "similarity_score": 0.5524,
+            "historical_intent": "app_store_billing",
+            "matched_query": "upgraded to 11.1.2 and iTunes Player won\u2019t work on iPhone 7. ANNOYING",
+            "agent_reply": "@121048 Let\u2019s work together to get this resolved. To be sure we\u2019re on the same page, are you noticing and issue with the"
+          },
+          {
+            "rank": 2,
+            "similarity_score": 0.4764,
+            "historical_intent": "general_inquiry_other",
+            "matched_query": "And why is my music NEVER in my control center?! @AppleSupport",
+            "agent_reply": "@116338 We're here to help out! Which device is this on and which version of iOS is currently installed?"
+          }
+        ],
+        "why_it_failed": "Intent Mismatch Gate Disqualification: Query spans macOS upgrade, physical keyboard media controls, and iTunes. The linear classifier predicted 'display_touch_keyboard' (confidence 0.22), whereas the top dense retrieval match was classified as 'app_store_billing' (score 0.552). Because intent concordance was enforced to prevent cross-domain hallucinations, the candidate was disqualified, and the agent safely abstained.",
+        "improvement_hypothesis": "Implement multi-label intent prediction and allow evidence retrieval across the top-2 predicted intent classes when confidence scores are closely distributed, recovering multi-faceted OS/app interactions without relaxing safety constraints."
+      },
+      {
+        "golden_id": "GOLDEN_006",
+        "customer_query": "My Apple Watch keeps turning off and on by itself and it\u2019s charged. What do I do?",
+        "predicted_intent": "network_connectivity",
+        "predicted_action": "ESCALATE",
+        "expected_intent": "performance_freeze_crash",
+        "expected_action": "AUTO_HANDLE",
+        "confidence": 0.1313,
+        "escalation_reason": "insufficient_grounding",
+        "grounding_status": "insufficient_evidence",
+        "retrieved_evidence": [
+          {
+            "rank": 1,
+            "similarity_score": 0.5542,
+            "historical_intent": "battery_power",
+            "matched_query": "hi, I have a problem with my macbook pro, it won't turn on, I think it might be the charger but not ",
+            "agent_reply": "@116340 We can help. Let\u2019s start with the following steps to see if we can save you a trip in for service: https://t.co/"
+          },
+          {
+            "rank": 2,
+            "similarity_score": 0.537,
+            "historical_intent": "performance_freeze_crash",
+            "matched_query": "my phone was acting up. I then restarted it and now all it does is stay on the apple logo when I tur",
+            "agent_reply": "@119216 We\u2019ve got your back. Let us know if the steps in this article help with your iPhone: https://t.co/8MvHMFZ83h"
+          }
+        ],
+        "why_it_failed": "Multi-Symptom Classifier Boundary Confusion: The customer reported an Apple Watch spontaneously rebooting despite being fully charged. The query conflates battery charging ('it\u2019s charged') with reboot loops ('keeps turning off and on'). The linear classifier predicted 'network_connectivity', which clashed with the retrieved 'battery_power' historical record (score 0.554), triggering an intent gate disqualification.",
+        "improvement_hypothesis": "Replace linear bag-of-words classification with a fine-tuned dense intent classifier (e.g., SetFit or MiniLM) that captures multi-token symptom semantics and handles rebooting hardware descriptions accurately."
+      },
+      {
+        "golden_id": "GOLDEN_010",
+        "customer_query": "how come Apple Pay isn\u2019t working on @9891? Every time I attempt to finish it, it says \u201cPayment not completed.\u201d",
+        "predicted_intent": "apple_id_icloud",
+        "predicted_action": "ESCALATE",
+        "expected_intent": "app_store_billing",
+        "expected_action": "ESCALATE",
+        "confidence": 0.124,
+        "escalation_reason": "financial_and_billing",
+        "grounding_status": "insufficient_evidence",
+        "retrieved_evidence": [
+          {
+            "rank": 1,
+            "similarity_score": 0.5364,
+            "historical_intent": "software_update",
+            "matched_query": "Help!! I need to update the payment method for my iPhone X pre-order. It won\u2019t let me do it online",
+            "agent_reply": "@122945 We're happy to help you with that. DM us the country you are located in so we can better assist you:"
+          },
+          {
+            "rank": 2,
+            "similarity_score": 0.5232,
+            "historical_intent": "general_inquiry_other",
+            "matched_query": "Well if you find out how to resolve it please let me know \ud83d\ude29 @AppleSupport can you help us ..... no I",
+            "agent_reply": "@123700 We've received your DM and will contiue with you from there. Keep an eye out for our response."
+          }
+        ],
+        "why_it_failed": "Payment Gateway / Token Authorization Misclassification: The customer reported that Apple Pay displayed 'Payment not completed'. The linear classifier misclassified the inquiry as 'apple_id_icloud' rather than 'app_store_billing' due to token authentication phrasing, though the agent's escalation policy successfully caught the transaction and escalated.",
+        "improvement_hypothesis": "Incorporate domain-specific feature weighting for digital wallet terms ('Apple Pay', 'payment not completed', 'wallet transaction') to guarantee routing to financial dispute queues."
+      }
+    ]
+  },
+  "human_verified_benchmark_metrics": {
+    "dataset_size": 200,
+    "intent_classification": {
+      "overall_accuracy": 0.655,
+      "macro_f1": 0.6547,
+      "weighted_f1": 0.6549,
+      "per_intent": {
+        "app_store_billing": {
+          "precision": 0.5263,
+          "recall": 0.7692,
+          "f1": 0.625,
+          "support": 13
+        },
+        "apple_id_icloud": {
+          "precision": 0.7059,
+          "recall": 0.75,
+          "f1": 0.7273,
+          "support": 16
+        },
+        "audio_sound": {
+          "precision": 0.7778,
+          "recall": 0.7778,
+          "f1": 0.7778,
+          "support": 18
+        },
+        "battery_power": {
+          "precision": 0.9375,
+          "recall": 0.8824,
+          "f1": 0.9091,
+          "support": 17
+        },
+        "camera_photos": {
+          "precision": 0.7143,
+          "recall": 0.8824,
+          "f1": 0.7895,
+          "support": 17
+        },
+        "display_touch_keyboard": {
+          "precision": 0.619,
+          "recall": 0.65,
+          "f1": 0.6341,
+          "support": 20
+        },
+        "general_inquiry_other": {
+          "precision": 0.3043,
+          "recall": 0.4375,
+          "f1": 0.359,
+          "support": 16
+        },
+        "hardware_repair_service": {
+          "precision": 0.6875,
+          "recall": 0.6471,
+          "f1": 0.6667,
+          "support": 17
+        },
+        "network_connectivity": {
+          "precision": 0.6471,
+          "recall": 0.6875,
+          "f1": 0.6667,
+          "support": 16
+        },
+        "order_shipping": {
+          "precision": 1.0,
+          "recall": 0.5,
+          "f1": 0.6667,
+          "support": 16
+        },
+        "performance_freeze_crash": {
+          "precision": 0.4545,
+          "recall": 0.2778,
+          "f1": 0.3448,
+          "support": 18
+        },
+        "software_update": {
+          "precision": 0.7692,
+          "recall": 0.625,
+          "f1": 0.6897,
+          "support": 16
+        }
+      }
+    },
+    "escalation_policy": {
+      "decision_accuracy": 0.7,
+      "escalation_precision": 0.5,
+      "escalation_recall": 0.8833,
+      "escalation_f1": 0.6386,
+      "confusion_matrix": {
+        "true_auto_handle_tn": 87,
+        "over_escalated_fp": 53,
+        "missed_escalate_fn": 7,
+        "true_escalate_tp": 53
+      }
+    },
+    "retrieval_and_reply_quality": {
+      "top1_retrieval_relevance_rate": 0.5,
+      "grounded_response_rate": 0.705,
+      "provenance_integrity_rate": 0.705,
+      "appropriate_abstention_rate": 0.295,
+      "unsafe_or_context_bound_reply_rate": 0.0,
+      "context_bound_candidates_rejected": 26
+    },
+    "top_5_real_failures": [
+      {
+        "golden_id": "GOLDEN_003",
+        "customer_query": "Neither iPhone alarm went off this morning, had to make a 5:30 AM flight. The 2am alarm on one phone finally went off at 5:40 on it's own. United just charged $640 per person to get on a later flight today \ud83d\ude20 @AppleSupport",
+        "predicted_intent": "audio_sound",
+        "predicted_action": "AUTO_HANDLE",
+        "expected_intent": "audio_sound",
+        "expected_action": "ESCALATE",
+        "confidence": 0.1834,
+        "escalation_reason": "none",
+        "grounding_status": "grounded",
+        "retrieved_evidence": [
+          {
+            "rank": 1,
+            "similarity_score": 0.5464,
+            "historical_intent": "audio_sound",
+            "matched_query": "My worst fear came true... my iPhone alarm isn\u2019t working and never went off this morning @AppleSuppo",
+            "agent_reply": "@121044 Hello. We are here to help. Has this happened previously. Also, what is your iOS version?"
+          },
+          {
+            "rank": 2,
+            "similarity_score": 0.53,
+            "historical_intent": "battery_power",
+            "matched_query": "My phone died at 10:30am this morning. I woke up at 6:30am with a full charge. Literally wtf @AppleS",
+            "agent_reply": "@126348 We want to help. Tell us more about what's happening in DM. https://t.co/GDrqU22YpT"
+          }
+        ],
+        "why_it_failed": "Missed Escalation (Safety False Negative): The customer experienced a severe alarm failure that caused a missed flight and an immediate $640 airline rebooking penalty. Because the classifier predicted 'audio_sound' (confidence 0.18) and the text lacked physical hardware danger or explicit profanity, the policy treated it as a routine alarm troubleshooting issue and auto-handled it rather than escalating for human customer relations and damage mitigation.",
+        "improvement_hypothesis": "Implement an emotional distress and consequential financial loss detector (e.g., regex/sentiment triggers capturing 'charged $', 'missed flight', 'emergency') to enforce mandatory human escalation whenever software bugs cause substantial real-world harm."
+      },
+      {
+        "golden_id": "GOLDEN_001",
+        "customer_query": "why are my App Store categories in Spanish but everything else in English??",
+        "predicted_intent": "app_store_billing",
+        "predicted_action": "ESCALATE",
+        "expected_intent": "app_store_billing",
+        "expected_action": "ESCALATE",
+        "confidence": 0.197,
+        "escalation_reason": "financial_and_billing",
+        "grounding_status": "insufficient_evidence",
+        "retrieved_evidence": [
+          {
+            "rank": 1,
+            "similarity_score": 0.4074,
+            "historical_intent": "general_inquiry_other",
+            "matched_query": "I\ufe0f can\u2019t believe that @115858 & @AppleSupport has not fixed the vowel text issue. It\u2019s very annoying",
+            "agent_reply": "@117460 We'd like to look into the trouble you're having. Does this only occur in the Facebook app?"
+          },
+          {
+            "rank": 2,
+            "similarity_score": 0.404,
+            "historical_intent": "general_inquiry_other",
+            "matched_query": "Baje la App de @701 la cual es gratuita y me llego un cargo de $18.11 Pesos \u00bfcu\u00e1l es el motivo?",
+            "agent_reply": "@117964 We offer support via Twitter in English. Get help in Spanish here: https://t.co/IBIY3vMgPj or join https://t.co/"
+          }
+        ],
+        "why_it_failed": "Retrieval Coverage Gap (Low Similarity Abstention): The customer asked why App Store categories appeared in Spanish while the rest of iOS remained in English. The classifier correctly predicted 'app_store_billing', but the 800-thread historical corpus lacked regional storefront or language localization cases (top similarity was 0.407, below the 0.45 threshold). Rather than inventing unverified troubleshooting steps, the agent safely abstained and escalated.",
+        "improvement_hypothesis": "Expand the historical support retrieval index from 800 conversations to 10,000+ interactions to guarantee dense coverage of regional App Store storefronts, language localization glitches, and multi-lingual account configurations."
+      },
+      {
+        "golden_id": "GOLDEN_002",
+        "customer_query": "Ever since I upgraded to High Sierra, my media controls on the keyboard don\u2019t work with iTunes. Please help or fix it @AppleSupport",
+        "predicted_intent": "display_touch_keyboard",
+        "predicted_action": "ESCALATE",
+        "expected_intent": "display_touch_keyboard",
+        "expected_action": "AUTO_HANDLE",
+        "confidence": 0.2226,
+        "escalation_reason": "insufficient_grounding",
+        "grounding_status": "insufficient_evidence",
+        "retrieved_evidence": [
+          {
+            "rank": 1,
+            "similarity_score": 0.5524,
+            "historical_intent": "app_store_billing",
+            "matched_query": "upgraded to 11.1.2 and iTunes Player won\u2019t work on iPhone 7. ANNOYING",
+            "agent_reply": "@121048 Let\u2019s work together to get this resolved. To be sure we\u2019re on the same page, are you noticing and issue with the"
+          },
+          {
+            "rank": 2,
+            "similarity_score": 0.4764,
+            "historical_intent": "general_inquiry_other",
+            "matched_query": "And why is my music NEVER in my control center?! @AppleSupport",
+            "agent_reply": "@116338 We're here to help out! Which device is this on and which version of iOS is currently installed?"
+          }
+        ],
+        "why_it_failed": "Intent Mismatch Gate Disqualification: Query spans macOS upgrade, physical keyboard media controls, and iTunes. The linear classifier predicted 'display_touch_keyboard' (confidence 0.22), whereas the top dense retrieval match was classified as 'app_store_billing' (score 0.552). Because intent concordance was enforced to prevent cross-domain hallucinations, the candidate was disqualified, and the agent safely abstained.",
+        "improvement_hypothesis": "Implement multi-label intent prediction and allow evidence retrieval across the top-2 predicted intent classes when confidence scores are closely distributed, recovering multi-faceted OS/app interactions without relaxing safety constraints."
+      },
+      {
+        "golden_id": "GOLDEN_006",
+        "customer_query": "My Apple Watch keeps turning off and on by itself and it\u2019s charged. What do I do?",
+        "predicted_intent": "network_connectivity",
+        "predicted_action": "ESCALATE",
+        "expected_intent": "performance_freeze_crash",
+        "expected_action": "AUTO_HANDLE",
+        "confidence": 0.1313,
+        "escalation_reason": "insufficient_grounding",
+        "grounding_status": "insufficient_evidence",
+        "retrieved_evidence": [
+          {
+            "rank": 1,
+            "similarity_score": 0.5542,
+            "historical_intent": "battery_power",
+            "matched_query": "hi, I have a problem with my macbook pro, it won't turn on, I think it might be the charger but not ",
+            "agent_reply": "@116340 We can help. Let\u2019s start with the following steps to see if we can save you a trip in for service: https://t.co/"
+          },
+          {
+            "rank": 2,
+            "similarity_score": 0.537,
+            "historical_intent": "performance_freeze_crash",
+            "matched_query": "my phone was acting up. I then restarted it and now all it does is stay on the apple logo when I tur",
+            "agent_reply": "@119216 We\u2019ve got your back. Let us know if the steps in this article help with your iPhone: https://t.co/8MvHMFZ83h"
+          }
+        ],
+        "why_it_failed": "Multi-Symptom Classifier Boundary Confusion: The customer reported an Apple Watch spontaneously rebooting despite being fully charged. The query conflates battery charging ('it\u2019s charged') with reboot loops ('keeps turning off and on'). The linear classifier predicted 'network_connectivity', which clashed with the retrieved 'battery_power' historical record (score 0.554), triggering an intent gate disqualification.",
+        "improvement_hypothesis": "Replace linear bag-of-words classification with a fine-tuned dense intent classifier (e.g., SetFit or MiniLM) that captures multi-token symptom semantics and handles rebooting hardware descriptions accurately."
+      },
+      {
+        "golden_id": "GOLDEN_010",
+        "customer_query": "how come Apple Pay isn\u2019t working on @9891? Every time I attempt to finish it, it says \u201cPayment not completed.\u201d",
+        "predicted_intent": "apple_id_icloud",
+        "predicted_action": "ESCALATE",
+        "expected_intent": "app_store_billing",
+        "expected_action": "ESCALATE",
+        "confidence": 0.124,
+        "escalation_reason": "financial_and_billing",
+        "grounding_status": "insufficient_evidence",
+        "retrieved_evidence": [
+          {
+            "rank": 1,
+            "similarity_score": 0.5364,
+            "historical_intent": "software_update",
+            "matched_query": "Help!! I need to update the payment method for my iPhone X pre-order. It won\u2019t let me do it online",
+            "agent_reply": "@122945 We're happy to help you with that. DM us the country you are located in so we can better assist you:"
+          },
+          {
+            "rank": 2,
+            "similarity_score": 0.5232,
+            "historical_intent": "general_inquiry_other",
+            "matched_query": "Well if you find out how to resolve it please let me know \ud83d\ude29 @AppleSupport can you help us ..... no I",
+            "agent_reply": "@123700 We've received your DM and will contiue with you from there. Keep an eye out for our response."
+          }
+        ],
+        "why_it_failed": "Payment Gateway / Token Authorization Misclassification: The customer reported that Apple Pay displayed 'Payment not completed'. The linear classifier misclassified the inquiry as 'apple_id_icloud' rather than 'app_store_billing' due to token authentication phrasing, though the agent's escalation policy successfully caught the transaction and escalated.",
+        "improvement_hypothesis": "Incorporate domain-specific feature weighting for digital wallet terms ('Apple Pay', 'payment not completed', 'wallet transaction') to guarantee routing to financial dispute queues."
+      }
+    ]
+  },
+  "zero_leakage_check": "PASSED (0 shared IDs)"
+}

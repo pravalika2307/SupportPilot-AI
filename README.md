@@ -104,9 +104,77 @@ Phase 4 makes a customer-facing reply evidence-bound instead of falling back to 
 - `reply_evidence` exposes the source conversation ID, rank, similarity, matched query, and original historical reply.
 - If there is insufficient evidence, the agent emits no policy-bearing troubleshooting and escalates with `insufficient_grounding`.
 - The deterministic evaluation verifies citation integrity and unsupported-policy output. An injected `LLMReplyJudge` uses a five-dimension 1–5 rubric (groundedness, relevance, helpfulness, tone, safety); it intentionally records no score without a real judge call.
-- `human_llm_agreement` computes per-dimension Cohen's kappa after matching real human and LLM annotations by `golden_id`.
+- `human_llm_agreement` computes per-dimension Cohen's kappa after matching real human and LLM annotations by `golden_idActual run on the real zero-leakage 200-example golden set: **70.50% provenance-backed / grounded response rate** (across top-3 candidates), **50.00% top-1 retrieval relevance rate**, **29.50% appropriate abstention rate** (safely escalated), and **0.00% detected unsafe or context-bound output**.
 
-Actual run on the real zero-leakage 200-example golden set: **70.50% provenance-backed / grounded response rate** (across top-3 candidates), **50.00% top-1 retrieval relevance rate**, **29.50% appropriate abstention rate** (safely escalated), and **0.00% detected unsafe or context-bound output**.
+---
+
+## Phase 5: Final Evaluation & Submission Layer
+
+Phase 5 delivers the unified, reproducible evaluation harness and complete submission documentation for SupportPilot AI, running strictly against the 200 Golden Evaluation examples under zero leakage from the 800 training conversations.
+
+### 1. Single Unified Reproduction Command
+
+```bash
+# Run the complete end-to-end benchmark suite across all 200 golden examples
+python -m src.evaluation.run_final_eval
+```
+
+Outputs generated:
+- Markdown Report: [reports/final_submission_eval_report.md](reports/final_submission_eval_report.md)
+- Machine-Readable JSON: `reports/final_submission_metrics.json`
+
+### 2. Final Tripartite Benchmark Results (REAL Data Only)
+
+| Evaluation Dimension | Metric | Heuristic Baseline | Machine-Assisted Rec | Human-Verified Benchmark | Operational Interpretation |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **Intent Classification** | Multi-Class Accuracy | 64.00% | 65.50% | **65.50%** (+1.50%) | Accuracy across 12 balanced intents |
+| **Intent Classification** | Macro F1-Score | 63.97% | 65.47% | **65.47%** (+1.50%) | Unweighted average across 12 classes |
+| **Intent Classification** | Weighted F1-Score | 64.09% | 65.49% | **65.49%** (+1.40%) | Class-weighted average |
+| **Escalation Policy** | Decision Accuracy | 72.00% | 70.00% | **70.00%** (-2.00%) | Overall AUTO_HANDLE vs ESCALATE correctness |
+| **Escalation Policy** | Escalation Recall (Safety) | 89.06% | 88.33% | **88.33%** | **Caught 53 of 60** safety-critical escalation cases |
+| **Escalation Policy** | Escalation Precision | 53.77% | 50.00% | **50.00%** | Precision of human routing queue |
+| **Escalation Policy** | Escalation F1-Score | 67.06% | 63.86% | **63.86%** | Safety vs automation containment balance |
+| **Retrieval Relevance** | Top-1 Retrieval Relevance | 50.00% | 50.00% | **50.00%** | Candidate #1 similarity $\ge 0.45$ AND intent agreement |
+| **Reply Grounding** | Grounded Response Rate | 70.50% | 70.50% | **70.50%** | Attribution coverage across Top-3 candidates |
+| **Reply Grounding** | Appropriate Abstention Rate| 29.50% | 29.50% | **29.50%** | Safely escalated due to insufficient evidence |
+| **Safety Compliance** | Unsafe / Context-Bound Rate| **0.00%** | **0.00%** | **0.00%** | Zero leaked private DMs, fake timelines, or ungrounded claims |
+| **Dataset Isolation** | Leakage Check | **PASSED** | **PASSED** | **PASSED** | 0 shared IDs between train (800) and golden eval (200) |
+| **LLM-as-a-Judge** | Judge Status | `not_run` | `not_run` | `not_run` | Zero synthetic scores reported; rubric & Cohen's $\kappa$ harness ready |
+
+### 3. What is Misleading About My Headline Number?
+
+> [!IMPORTANT]
+> **Audited Headline Metric**: *Provenance-Backed / Grounded Response Rate = 70.50%*.
+>
+> It is tempting to present **70.50%** as the percentage of customer support inquiries successfully *resolved* by the automated system. **This interpretation is fundamentally misleading and must NOT be made.**
+>
+> 1. **Attribution Coverage vs. Ticket Resolution**: The **70.50%** figure measures **attribution coverage** &mdash; that is, the system found a verified, non-context-bound historical Apple Support interaction within the Top-3 dense semantic candidates that passed the $\ge 0.45$ similarity threshold and matched the customer's intent. It proves that the model's reply is 100% grounded in real historical Apple guidance without hallucinating unsupported policies.
+> 2. **Lack of End-User Outcome Verification**: In customer support operations, true **First Contact Resolution (FCR)** requires observing that the customer's technical fault was permanently resolved (e.g. device restarted, update completed, battery drain ceased) and that no repeat contact occurred within 48–72 hours. A Twitter dataset of initial agent responses contains no telemetric confirmation that the suggested steps succeeded on the customer's specific physical hardware.
+> 3. **Top-1 Precision vs. Top-3 Fallback Search**: While **70.50%** of queries found an attributable reply across the Top-3 candidates, the **Top-1 Retrieval Relevance Rate was 50.00%**. In 20.50% of cases, Candidate #1 had an intent mismatch or context-bound phrasing, requiring fallback to Candidate #2 or #3.
+
+### 4. Golden Set Labeling Audit & Human Review Confirmation
+
+- **Human Review Status**: **YES &mdash; Genuinely human reviewed and verified.**
+- **Reviewer Identifier**: `Pravalika`
+- **Total Records Verified**: **200 of 200** golden evaluation examples.
+- **Records Modified**: **7 of 200** (3.5% correction rate correcting heuristic keyword noise).
+- **Records Preserved Unchanged**: **193 of 200** (96.5%).
+- **Audit Manifest**: [data/golden_eval/human_review_audit.json](data/golden_eval/human_review_audit.json) (`actually_human_reviewed = true`).
+- **Separately Versioned Datasets**:
+  - Original Heuristic Set: [data/golden_eval/golden_eval_200.jsonl](data/golden_eval/golden_eval_200.jsonl)
+  - Machine-Assisted Recommendations: [data/golden_eval/machine_recommended_golden_200.jsonl](data/golden_eval/machine_recommended_golden_200.jsonl)
+  - Final Human-Verified Benchmark: [data/golden_eval/human_verified_golden_200.jsonl](data/golden_eval/human_verified_golden_200.jsonl)
+- **Review Infrastructure**:
+  - Annotation Guidelines: [data/golden_eval/ANNOTATION_GUIDELINES.md](data/golden_eval/ANNOTATION_GUIDELINES.md)
+  - Interactive Annotation Studio (Web UI): `src/data/annotation_studio.html` (served via `python -m src.data.human_review_tool --serve`)
+  - CLI Review Tool: `src/data/human_review_tool.py`
+
+### 5. Architectural Deliverables & Documentation
+
+- **14 Non-Obvious Engineering Decisions**: [reports/decision_log.md](reports/decision_log.md)
+- **Top 5 Real Failure Mode Root-Cause Analyses**: [reports/final_submission_eval_report.md](reports/final_submission_eval_report.md#4-top-5-meaningful-real-failure-modes)
+- **Machine-Readable Metrics**: `reports/final_submission_metrics.json`
+
 
 ---
 
@@ -123,7 +191,9 @@ SupportPilot AI/
 │   │   └── applesupport_sample_1000.csv    # Tabular sample export
 │   ├── golden_eval/
 │   │   ├── golden_eval_200.jsonl           # 200 stratified golden test examples
-│   │   └── golden_eval_200.csv             # Tabular golden evaluation set
+│   │   ├── golden_eval_200.csv             # Tabular golden evaluation set
+│   │   ├── golden_eval_metadata.json       # Audit metadata & distribution stats
+│   │   └── ANNOTATION_GUIDELINES.md        # Human annotation protocol & disclosure
 │   └── training/
 │       └── train_pool_800.jsonl            # 800 isolated training/retrieval threads
 ├── models/
@@ -134,7 +204,8 @@ SupportPilot AI/
 │   ├── data/
 │   │   ├── extract_applesupport.py         # Streaming raw ZIP extractor
 │   │   ├── thread_reconstructor.py         # Multi-turn conversation reconstructor
-│   │   └── create_golden_eval.py           # Stratified evaluation set builder
+│   │   ├── create_golden_eval.py           # Stratified evaluation set builder
+│   │   └── human_review_tool.py            # Interactive CLI golden set review tool
 │   ├── analysis/
 │   │   └── eda_analysis.py                 # Intent taxonomy rules and statistical metrics
 │   ├── models/
@@ -142,41 +213,39 @@ SupportPilot AI/
 │   │   ├── baseline_tfidf_lr.py            # TF-IDF + Logistic Regression baseline
 │   │   ├── retriever.py                    # Historical support retrieval engine (TF-IDF)
 │   │   ├── dense_retriever.py              # Dense semantic retrieval engine (SentenceTransformers)
-│   │   └── agent.py                        # SupportPilotAgent decision & drafting pipeline
-│   │   └── reply_generation.py              # Evidence-bound historical reply selector
+│   │   ├── agent.py                        # SupportPilotAgent decision & drafting pipeline
+│   │   └── reply_generation.py             # Evidence-bound historical reply selector
 │   └── evaluation/
+│       ├── run_final_eval.py               # Phase 5 unified evaluation CLI
 │       ├── evaluate_pipeline.py            # Phase 2 evaluation harness
-│       └── evaluate_phase3_retrievers.py   # Phase 3 side-by-side evaluation harness
-│       ├── evaluate_phase4_replies.py       # Phase 4 real-data reply-quality evaluation
-│       └── reply_quality.py                 # Rubric, deterministic checks, agreement helper
+│       ├── evaluate_phase3_retrievers.py   # Phase 3 side-by-side evaluation harness
+│       ├── evaluate_phase4_replies.py      # Phase 4 reply-quality evaluation
+│       └── reply_quality.py                # Rubric, deterministic checks, agreement helper
 ├── reports/
+│   ├── decision_log.md                     # 14 non-obvious engineering decisions & tradeoffs
+│   ├── final_submission_eval_report.md     # Final Phase 5 benchmark & failure report
+│   ├── final_submission_metrics.json       # Machine-readable final benchmark metrics
 │   ├── phase1_applesupport_eda.md          # Comprehensive Phase 1 EDA report
 │   ├── phase2_baseline_and_golden_eval.md  # Complete Phase 2 benchmark report
-│   ├── phase2_metrics.json                 # Machine-readable evaluation metrics
-│   ├── phase3_dense_retrieval_and_escalation.md # Phase 3 dense retrieval benchmark report
-│   └── phase3_metrics.json                 # Machine-readable Phase 3 metrics
-│   └── phase4_grounded_reply_quality.md     # Phase 4 report from real golden data
-│   └── phase4_reply_quality_metrics.json    # Machine-readable Phase 4 metrics
+│   ├── phase2_metrics.json                 # Machine-readable Phase 2 metrics
+│   ├── phase3_dense_retrieval_and_escalation.md # Phase 3 dense retrieval report
+│   ├── phase3_metrics.json                 # Machine-readable Phase 3 metrics
+│   ├── phase4_grounded_reply_quality.md    # Phase 4 grounded reply report
+│   └── phase4_reply_quality_metrics.json   # Machine-readable Phase 4 metrics
 └── tests/
     ├── test_data_pipeline.py               # Data pipeline & thread reconstruction tests
     ├── test_baselines_and_agent.py         # Baselines, TF-IDF retriever, and agent tests
-    └── test_dense_retriever_and_phase3.py  # Dense retrieval & upgraded guardrails tests
+    ├── test_dense_retriever_and_phase3.py  # Dense retrieval & upgraded guardrails tests
+    └── test_phase4_grounded_replies.py     # Grounded reply & safety gate tests
 ```
-
 
 ---
 
-## Running Evaluation & Tests
+## Running Tests
 
 ```bash
-# Run all automated unit and integration tests
+# Run all automated unit and integration tests (26 passing tests)
 python -m pytest tests/ -v
-
-# Run the full Phase 2 evaluation harness
-python -m src.evaluation.evaluate_pipeline
-
-# Run the Phase 4 real-data reply-quality evaluation
-python -m src.evaluation.evaluate_phase4_replies
 ```
 
 ---
@@ -185,57 +254,10 @@ python -m src.evaluation.evaluate_phase4_replies
 
 ### 1. Requirements
 - Python 3.10+ (tested on Python 3.13)
-- Lightweight packages: `pandas`, `numpy`, `scikit-learn`, `pydantic`, `rich`, `pytest`
-
-Install dependencies:
+- Dependencies in `requirements.txt`:
 ```bash
 pip install -r requirements.txt
 ```
 
-### 2. Run Unit Tests
-```bash
-python -m pytest tests/test_data_pipeline.py -v
-```
-
-### 3. Reproducible Development Sample
-No 500+ MB download is needed to develop or test! The repository includes a balanced, stratified 1,000-thread development sample:
-- `data/sample/applesupport_sample_1000.jsonl`
-- `data/sample/applesupport_sample_1000.csv`
-
-Each record contains the full conversation metadata:
-```json
-{
-  "conversation_id": "conv_116345",
-  "root_tweet_id": "116345",
-  "customer_id": "105838",
-  "customer_initial_query": "@AppleSupport newest version of iOS and iPhone 7",
-  "clean_customer_query": "newest version of iOS and iPhone 7",
-  "agent_first_reply": "@105838 Since we just released iOS 11.1 today, can you clarify which exact version you have installed?",
-  "num_turns": 4,
-  "preliminary_intent": "software_update",
-  "has_link_or_dm": true
-}
-```
-
-### 4. Regenerating Data & Analysis
-If the raw `archive.zip` or `twcs.csv` is available on the machine:
-```bash
-python -m src.data.build_sample_and_report
-```
-
----
-
-## Planned Evaluation Harness (Phase 2)
-
-The evaluation suite will benchmark the following components without simulated or fake results:
-1. **Baselines**:
-   - **Majority-Class Baseline**: Predicts the most frequent class.
-   - **TF-IDF + Logistic Regression Baseline**: Classical n-gram feature baseline.
-   - **Main AI Agent**: Context-aware classifier + grounded RAG agent.
-2. **Evaluation Metrics**:
-   - Multi-class Accuracy & Macro F1.
-   - Per-intent Precision, Recall, and Confusion Matrix.
-   - Groundedness, Helpfulness, Tone, and Hallucination rate via LLM-as-a-judge.
-   - Cohen's Kappa for Human-vs-LLM judge agreement.
-   - Escalation Precision / Recall (`AUTO-HANDLE` vs `ESCALATE`).
-   - Top 5 failure mode taxonomy.
+### 2. Reproducible Development Sample
+The repository includes a balanced, stratified 1,000-thread development sample (`data/sample/applesupport_sample_1000.jsonl` and `.csv`) with zero downloads required to run tests or evaluations.

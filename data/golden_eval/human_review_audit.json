@@ -1,0 +1,89 @@
+{
+  "timestamp": "2026-09-09T13:19:52.216137+00:00",
+  "total_golden_records": 200,
+  "number_reviewed": 200,
+  "number_changed": 7,
+  "number_unchanged": 193,
+  "percent_changed": 3.5,
+  "reviewer_status": {
+    "reviewer_id": "Pravalika",
+    "actually_human_reviewed": true,
+    "audit_disclosure": "Human-reviewed and verified by the project author (Pravalika)"
+  },
+  "final_intent_distribution": {
+    "app_store_billing": 13,
+    "display_touch_keyboard": 20,
+    "audio_sound": 18,
+    "performance_freeze_crash": 18,
+    "apple_id_icloud": 16,
+    "battery_power": 17,
+    "camera_photos": 17,
+    "general_inquiry_other": 16,
+    "hardware_repair_service": 17,
+    "network_connectivity": 16,
+    "order_shipping": 16,
+    "software_update": 16
+  },
+  "final_action_distribution": {
+    "AUTO_HANDLE": 140,
+    "ESCALATE": 60
+  },
+  "sample_modifications": [
+    {
+      "golden_id": "GOLDEN_002",
+      "query": "Ever since I upgraded to High Sierra, my media controls on the keyboard don\u2019t wo",
+      "orig_intent": "app_store_billing",
+      "new_intent": "display_touch_keyboard",
+      "orig_action": "ESCALATE",
+      "new_action": "AUTO_HANDLE"
+    },
+    {
+      "golden_id": "GOLDEN_003",
+      "query": "Neither iPhone alarm went off this morning, had to make a 5:30 AM flight. The 2a",
+      "orig_intent": "app_store_billing",
+      "new_intent": "audio_sound",
+      "orig_action": "ESCALATE",
+      "new_action": "ESCALATE"
+    },
+    {
+      "golden_id": "GOLDEN_006",
+      "query": "My Apple Watch keeps turning off and on by itself and it\u2019s charged. What do I do",
+      "orig_intent": "app_store_billing",
+      "new_intent": "performance_freeze_crash",
+      "orig_action": "ESCALATE",
+      "new_action": "AUTO_HANDLE"
+    },
+    {
+      "golden_id": "GOLDEN_009",
+      "query": "Easily worst purchase I\u2019ve made is @115858 \u2018s iPhone 8+. Either that or just the",
+      "orig_intent": "app_store_billing",
+      "new_intent": "performance_freeze_crash",
+      "orig_action": "ESCALATE",
+      "new_action": "AUTO_HANDLE"
+    },
+    {
+      "golden_id": "GOLDEN_028",
+      "query": "hi apple! How am I supposed to enter my password when my number keyboard refuses",
+      "orig_intent": "apple_id_icloud",
+      "new_intent": "display_touch_keyboard",
+      "orig_action": "ESCALATE",
+      "new_action": "AUTO_HANDLE"
+    },
+    {
+      "golden_id": "GOLDEN_048",
+      "query": "MY PHONE WONT FUCKING GO OFF HEADPHONE MODE @AppleSupport thoughts?",
+      "orig_intent": "audio_sound",
+      "new_intent": "audio_sound",
+      "orig_action": "AUTO_HANDLE",
+      "new_action": "ESCALATE"
+    },
+    {
+      "golden_id": "GOLDEN_105",
+      "query": "what\u2019s up with the letter \u201ci\u201d man? pls fix. i\u2019m annoyed. @115858 @AppleSupport",
+      "orig_intent": "general_inquiry_other",
+      "new_intent": "display_touch_keyboard",
+      "orig_action": "ESCALATE",
+      "new_action": "AUTO_HANDLE"
+    }
+  ]
+}

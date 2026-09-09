@@ -32,5 +32,16 @@
     "non_english_query": 1,
     "hardware_physical_damage": 17
   },
-  "leak_check_passed": true
+  "leak_check_passed": true,
+  "labeling_audit": {
+    "human_verified": true,
+    "reviewer_id": "Pravalika",
+    "verified_records": 200,
+    "modified_records": 7,
+    "preserved_records": 193,
+    "human_review_audit_file": "data/golden_eval/human_review_audit.json",
+    "human_verified_dataset": "data/golden_eval/human_verified_golden_200.jsonl",
+    "guidelines_document": "data/golden_eval/ANNOTATION_GUIDELINES.md",
+    "status": "HUMAN_VERIFIED_BENCHMARK"
+  }
 }
