@@ -1,0 +1,125 @@
+{
+  "evaluation_dataset": {
+    "golden_set_size": 200,
+    "training_set_size": 800,
+    "leakage_detected": false
+  },
+  "majority_class_baseline": {
+    "predicted_majority_class": "general_inquiry_other",
+    "accuracy": 0.085,
+    "macro_f1": 0.013056835637480798,
+    "weighted_f1": 0.013317972350230413
+  },
+  "tfidf_logistic_regression": {
+    "accuracy": 0.64,
+    "macro_precision": 0.6633844095522989,
+    "macro_recall": 0.6375612745098039,
+    "macro_f1": 0.6397151675998515,
+    "weighted_f1": 0.6409130469416314,
+    "latency_ms_per_query": 0.03406047821044922,
+    "per_class": {
+      "app_store_billing": {
+        "precision": 0.5263,
+        "recall": 0.5882,
+        "f1": 0.5556,
+        "support": 17
+      },
+      "apple_id_icloud": {
+        "precision": 0.7647,
+        "recall": 0.7647,
+        "f1": 0.7647,
+        "support": 17
+      },
+      "audio_sound": {
+        "precision": 0.7222,
+        "recall": 0.7647,
+        "f1": 0.7429,
+        "support": 17
+      },
+      "battery_power": {
+        "precision": 0.9375,
+        "recall": 0.8824,
+        "f1": 0.9091,
+        "support": 17
+      },
+      "camera_photos": {
+        "precision": 0.7143,
+        "recall": 0.8824,
+        "f1": 0.7895,
+        "support": 17
+      },
+      "display_touch_keyboard": {
+        "precision": 0.5238,
+        "recall": 0.6471,
+        "f1": 0.5789,
+        "support": 17
+      },
+      "general_inquiry_other": {
+        "precision": 0.3043,
+        "recall": 0.4118,
+        "f1": 0.35,
+        "support": 17
+      },
+      "hardware_repair_service": {
+        "precision": 0.6875,
+        "recall": 0.6471,
+        "f1": 0.6667,
+        "support": 17
+      },
+      "network_connectivity": {
+        "precision": 0.6471,
+        "recall": 0.6875,
+        "f1": 0.6667,
+        "support": 16
+      },
+      "order_shipping": {
+        "precision": 1.0,
+        "recall": 0.5,
+        "f1": 0.6667,
+        "support": 16
+      },
+      "performance_freeze_crash": {
+        "precision": 0.3636,
+        "recall": 0.25,
+        "f1": 0.2963,
+        "support": 16
+      },
+      "software_update": {
+        "precision": 0.7692,
+        "recall": 0.625,
+        "f1": 0.6897,
+        "support": 16
+      }
+    }
+  },
+  "retrieval_engine": {
+    "mean_top1_cosine_similarity": 0.236444,
+    "mean_top3_avg_cosine_similarity": 0.19639466666666666
+  },
+  "agent_decision_policy": {
+    "overall_accuracy": 0.765,
+    "escalation_precision": 0.6024096385542169,
+    "escalation_recall": 0.78125,
+    "escalation_f1": 0.6802721088435374,
+    "confusion_matrix": {
+      "true_auto_handle_tn": 103,
+      "over_escalated_fp": 33,
+      "missed_escalate_fn": 14,
+      "true_escalate_tp": 50
+    },
+    "accuracy_by_difficulty": {
+      "straightforward": {
+        "count": 88,
+        "accuracy": 0.6818181818181818
+      },
+      "ambiguous": {
+        "count": 89,
+        "accuracy": 0.8539325842696629
+      },
+      "edge_case": {
+        "count": 23,
+        "accuracy": 0.7391304347826086
+      }
+    }
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "total_golden_examples": 200,
+  "total_training_examples": 800,
+  "intent_distribution": {
+    "app_store_billing": 17,
+    "apple_id_icloud": 17,
+    "audio_sound": 17,
+    "battery_power": 17,
+    "camera_photos": 17,
+    "display_touch_keyboard": 17,
+    "general_inquiry_other": 17,
+    "hardware_repair_service": 17,
+    "network_connectivity": 16,
+    "order_shipping": 16,
+    "performance_freeze_crash": 16,
+    "software_update": 16
+  },
+  "action_distribution": {
+    "ESCALATE": 64,
+    "AUTO_HANDLE": 136
+  },
+  "difficulty_distribution": {
+    "straightforward": 88,
+    "ambiguous": 89,
+    "edge_case": 23
+  },
+  "escalation_reason_distribution": {
+    "financial_and_billing": 17,
+    "none": 136,
+    "account_security_and_pii": 7,
+    "vague_or_abusive": 22,
+    "non_english_query": 1,
+    "hardware_physical_damage": 17
+  },
+  "leak_check_passed": true
+}

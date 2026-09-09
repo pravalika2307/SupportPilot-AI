@@ -1,0 +1,68 @@
+Total conversations: 1000
+Total general_inquiry_other: 180 (18.0%)
+
+--- Sub-Theme Breakdown inside general_inquiry_other (180 total) ---
+performance_freeze_crash      :  31 (17.2%)
+keyboard_autocorrect_letter_i :  16 (8.9%)
+storage_space                 :  12 (6.7%)
+greetings_general_chat        :  10 (5.6%)
+watch_wearables               :   7 (3.9%)
+audio_sound_missed            :   2 (1.1%)
+third_party_apps              :   1 (0.6%)
+genuinely_unclassified        : 101 (56.1%)
+
+--- Sample queries from top sub-themes ---
+
+[STORAGE_SPACE] (Total: 12)
+  * i have 256 hd and timemachine/system is taking up 150gb of space. I only have 25gb free. Is it suppo
+  * MacOS Sierra is taking up over 100G of my 120G SSD. Why does it take up that much space and can I do
+  * 12/9TB of storage completely unusable and what happened to the data? What’s up Apple? 2/2
+  * Hi, it looks like I can no longer set the Podcasts app to only keep two recent episodes, and now a b
+
+[WATCH_WEARABLES] (Total: 7)
+  * watchOs4 made my watch pointless Browsing music on my phone via the watch was 80% reason for buying 
+  * just updated my 7 plus to 11.1 but I can’t see the new emojis on my watch. Pls help.
+  * just updated Apple Watch to 4.1. Is ESPN radio etc only available in USA, can’t get it on my watch i
+  * my watch has been saying I’ve been averaging 57 minutes, now today it’s 52, I checked and did the ma
+
+[PERFORMANCE_FREEZE_CRASH] (Total: 31)
+  * my phone was acting up. I then restarted it and now all it does is stay on the apple logo when I tur
+  * my iPhone is a fully up to date so why does my phone keep freezing 🙃???
+  * My iphone 7 stuck on apple logo and keep rebooting , What can i do to fix it without losing any data
+  * I’m late to the complaining party, but y’all I keep having to restart my phone just to make a call 🙄
+
+[KEYBOARD_AUTOCORRECT_LETTER_I] (Total: 16)
+  * tell me why I️’I’ve updated my phone twice and I️ can’t type letter I️ without getting a letter A an
+  * excuse me, can someone explain to me why when I type an “I️” alone I️ get an A and a question mark??
+  * hey apple ! What is going on with the iPhones ?? Every time I️ type the letter “I️” I️ get a symbol.
+  * Dear @AppleSupport why is my letter I️ not working by itself in email or text? When I️ type the lett
+
+[THIRD_PARTY_APPS] (Total: 1)
+  * Hi! What is going on? Has Youtube lost it? What can be done about it? Thanks for the support!
+
+[AUDIO_SOUND_MISSED] (Total: 2)
+  * And why is my music NEVER in my control center?! @AppleSupport
+  * Why am I loosing songs I’ve downloaded on Apple Music. It won’t let me download them again either. G
+
+[GREETINGS_GENERAL_CHAT] (Total: 10)
+  * Hey @AppleSupport and anyone else who upgraded to ios11.1, are y’all having issues with capital “I️”
+  * hello are all the lines closed for tonight #help
+  * Hey @AppleSupport - my iPhone X is stuck on the restore with just 270 bytes to go. What should I do?
+  * Hey @AppleSupport So it’s been like this for a while, from 10.13 to 10.13.1, even under the Technolo
+
+--- Sample Genuinely Unclassified Queries ---
+  * why are my I️’s changing not showing up correctly on any of my social media platforms?
+  * I️ need answers because it’s annoying 🙃
+  * Thank you @AppleSupport I updated my phone and now it is even slower and barely works. Thank you for
+  * Hola @AppleSupport necesito urgente la actualización de software. La batería me dura literal medio d
+  * Why is “I️” keep changing to this and how do I️ stop it🤦🏽‍♀️ @115858 @AppleSupport #anybody
+  * why is my home sharing not working and how do i fix it
+  * epıl bana yardımcı olur musun telefon internet konusunda çok yakıyo napcaz ?
+  * Cupertino, we have a problem. .@115858 .@116333 .@AppleSupport .@190
+  * do you have any apps for epilepsy so I can detect my seizures thanks in advance
+  * My iPhone has erased and re-added emails dating back from 2013 til now twice in the past 24 hours. W
+  * So why is this happening I️ I️ I️ @AppleSupport
+  * I keep getting this error message saying “the item can’t be played” and idk how to fix it... @115948
+  * HELP ME. I have a problem with my iPhone 7😑
+  * Listen I’m having issues with my phone so like can you @ me so we can talk @AppleSupport
+  * I've also forced the app to close from the background and reopened, no dice 🎲
