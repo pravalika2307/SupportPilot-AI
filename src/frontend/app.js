@@ -1069,8 +1069,8 @@ function renderAnalyzeResult(data, query, container) {
   }
 
   container.innerHTML = `
-    <!-- 3. CUSTOMER ORIGINAL MESSAGE (stub) -->
-    <div class="result-card-stub">
+    <!-- 3. CUSTOMER ORIGINAL MESSAGE -->
+    <div class="result-card">
       <div class="result-card-header">
         <span class="result-tag">CUSTOMER</span>
         <span style="font-size:11px;color:var(--muted);font-family:var(--mono);">${query.length} characters</span>
@@ -1091,8 +1091,8 @@ function renderAnalyzeResult(data, query, container) {
       </div>
     </div>
 
-    <!-- 3. WHY OPERATIONAL EXPLANATION (stub) -->
-    <div class="result-card-stub">
+    <!-- 3. WHY OPERATIONAL EXPLANATION -->
+    <div class="result-card">
       <div class="result-card-header">
         <span class="result-tag">WHY</span>
         <span style="font-size:11px;color:var(--muted);">Operational explanation</span>
@@ -1101,7 +1101,7 @@ function renderAnalyzeResult(data, query, container) {
     </div>
 
     <!-- 3. DECISION SIGNALS -->
-    ${renderDecisionSignalsHtml(data)}
+    <!-- signals placeholder -->
 
     <!-- 6. WITHHELD STATE SPECIAL CARD (If Withheld) -->
     ${caseState === 'WITHHELD' ? renderWithheldBoxHtml(data) : ''}

@@ -1842,7 +1842,8 @@ body {
 }
 
 /* 3. Decision Signals Panel */
-.decision-signals-card {
+/* .decision-signals-card disabled in c5 */
+.disabled-signals {
   margin: 14px 0;
   padding: 12px 16px;
   background: var(--elevated);
@@ -2412,8 +2413,7 @@ body {
   gap: 14px;
 }
 
-/* .result-card disabled in c4 */
-.disabled-result-card {
+.result-card {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
