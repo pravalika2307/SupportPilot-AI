@@ -996,7 +996,8 @@ async function runAnalysis(query) {
   if (empty) empty.style.display = 'none';
   if (result) result.style.display = 'none';
 
-  // pipeline placeholder
+  // 10. REAL-TIME SUBTLE PROGRESS
+  if (pipeLine) pipeLine.style.display = 'flex';
   setPipeStep(1, 'active');
 
   const pstep1 = delay(130);
@@ -1068,8 +1069,8 @@ function renderAnalyzeResult(data, query, container) {
   }
 
   container.innerHTML = `
-    <!-- 3. CUSTOMER ORIGINAL MESSAGE -->
-    <div class="result-card">
+    <!-- 3. CUSTOMER ORIGINAL MESSAGE (stub) -->
+    <div class="result-card-stub">
       <div class="result-card-header">
         <span class="result-tag">CUSTOMER</span>
         <span style="font-size:11px;color:var(--muted);font-family:var(--mono);">${query.length} characters</span>
@@ -1090,8 +1091,8 @@ function renderAnalyzeResult(data, query, container) {
       </div>
     </div>
 
-    <!-- 3. WHY OPERATIONAL EXPLANATION -->
-    <div class="result-card">
+    <!-- 3. WHY OPERATIONAL EXPLANATION (stub) -->
+    <div class="result-card-stub">
       <div class="result-card-header">
         <span class="result-tag">WHY</span>
         <span style="font-size:11px;color:var(--muted);">Operational explanation</span>

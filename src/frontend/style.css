@@ -1099,8 +1099,7 @@ body {
 }
 
 /* Pipeline status */
-/* .pipeline-line disabled in c3 */
-.disabled-pipeline {
+.pipeline-line {
   display: flex;
   align-items: center;
   gap: 6px;
@@ -2413,7 +2412,8 @@ body {
   gap: 14px;
 }
 
-.result-card {
+/* .result-card disabled in c4 */
+.disabled-result-card {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
