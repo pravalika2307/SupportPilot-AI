@@ -1931,8 +1931,7 @@ body {
 }
 
 /* 4. Evidence Comparison Table */
-/* .ev-comparison-table disabled in c6 */
-.disabled-ev-table {
+.ev-comparison-table {
   width: 100%;
   border-collapse: collapse;
   margin-bottom: 14px;
@@ -2003,7 +2002,8 @@ body {
 }
 
 /* 6. WITHHELD State */
-.withheld-box {
+/* .withheld-box disabled in c7 */
+.disabled-withheld-box {
   padding: 20px;
   background: var(--surface);
   border: 1px solid var(--border);
