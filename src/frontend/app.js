@@ -1101,7 +1101,7 @@ function renderAnalyzeResult(data, query, container) {
     </div>
 
     <!-- 3. DECISION SIGNALS -->
-    <!-- signals placeholder -->
+    ${renderDecisionSignalsHtml(data)}
 
     <!-- 6. WITHHELD STATE SPECIAL CARD (If Withheld) -->
     ${caseState === 'WITHHELD' ? renderWithheldBoxHtml(data) : ''}
@@ -1113,7 +1113,7 @@ function renderAnalyzeResult(data, query, container) {
         <span style="font-size:11px;color:var(--muted);">Top-3 Candidates from 800-thread Apple Support corpus</span>
       </div>
       <div id="analyzeEvidenceContainer">
-        ${renderEvidenceContentHtml(data, caseState, state.activeAnalyzeCandidateIndex)}
+        ${"<!-- evidence comparison stub -->"}
       </div>
     </div>
 
@@ -1145,7 +1145,7 @@ function renderAnalyzeResult(data, query, container) {
         state.activeAnalyzeCandidateIndex = parseInt(row.getAttribute('data-cand-idx') || '0', 10);
         const evCont = container.querySelector('#analyzeEvidenceContainer');
         if (evCont) {
-          evCont.innerHTML = renderEvidenceContentHtml(data, caseState, state.activeAnalyzeCandidateIndex);
+          evCont.innerHTML = "<!-- evidence comparison stub -->";
           bindCandidateClicks();
         }
       };

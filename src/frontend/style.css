@@ -1842,8 +1842,7 @@ body {
 }
 
 /* 3. Decision Signals Panel */
-/* .decision-signals-card disabled in c5 */
-.disabled-signals {
+.decision-signals-card {
   margin: 14px 0;
   padding: 12px 16px;
   background: var(--elevated);
@@ -1932,7 +1931,8 @@ body {
 }
 
 /* 4. Evidence Comparison Table */
-.ev-comparison-table {
+/* .ev-comparison-table disabled in c6 */
+.disabled-ev-table {
   width: 100%;
   border-collapse: collapse;
   margin-bottom: 14px;
