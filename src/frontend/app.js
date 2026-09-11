@@ -8,7 +8,7 @@
 
 // ── State ────────────────────────────────────────────────────────
 const state = {
-  currentView: 'inbox',  // 1. Analyze as primary wow workstation
+  currentView: 'analyze',  // 1. Analyze as primary wow workstation
   currentCase: null,       // { id, query, analysisData, time }
   currentTab: 'why',
   currentFilter: 'all',    // 'all' | 'auto' | 'escalate' | 'withheld'
@@ -996,8 +996,7 @@ async function runAnalysis(query) {
   if (empty) empty.style.display = 'none';
   if (result) result.style.display = 'none';
 
-  // 10. REAL-TIME SUBTLE PROGRESS
-  if (pipeLine) pipeLine.style.display = 'flex';
+  // pipeline placeholder
   setPipeStep(1, 'active');
 
   const pstep1 = delay(130);

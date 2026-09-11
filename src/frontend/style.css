@@ -1099,7 +1099,8 @@ body {
 }
 
 /* Pipeline status */
-.pipeline-line {
+/* .pipeline-line disabled in c3 */
+.disabled-pipeline {
   display: flex;
   align-items: center;
   gap: 6px;
@@ -2354,8 +2355,7 @@ body {
 }
 
 /* 1. What SupportPilot Evaluates Box */
-/* .evaluates-box disabled in c2 */
-.disabled-evaluates {
+.evaluates-box {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
