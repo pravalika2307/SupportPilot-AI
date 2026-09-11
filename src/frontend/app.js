@@ -44,6 +44,7 @@ const CORPUS_SEED = [
 document.addEventListener('DOMContentLoaded', () => {
   initAppLoader();
   initNav();
+  initHowItWorks();
   initInbox();
   initAnalyze();
   initKnowledge();

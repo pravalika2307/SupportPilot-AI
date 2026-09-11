@@ -2138,8 +2138,7 @@ body {
    ============================================================ */
 
 /* 11. Core Motto Banner */
-/* .motto-banner disabled in c1 */
-.disabled-motto {
+.motto-banner {
   display: flex;
   align-items: center;
   gap: 14px;
@@ -2182,8 +2181,7 @@ body {
 }
 
 /* 2. First-time How-it-Works Panel */
-/* .how-it-works disabled in c1 */
-.disabled-hiw {
+.how-it-works-panel {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
@@ -2356,7 +2354,7 @@ body {
 }
 
 /* 1. What SupportPilot Evaluates Box */
-/* .evaluates-box disabled in c1 */
+/* .evaluates-box disabled in c2 */
 .disabled-evaluates {
   background: var(--surface);
   border: 1px solid var(--border);
