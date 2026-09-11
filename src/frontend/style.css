@@ -2458,8 +2458,7 @@ body {
   gap: 12px;
 }
 
-/* .corpus-case-card disabled in c8 */
-.disabled-corpus-card {
+.corpus-case-card {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
@@ -2547,7 +2546,8 @@ body {
 }
 
 /* 9. Failures Taxonomy Groups */
-.failures-group-section {
+/* .failures-group-section disabled in c9 */
+.disabled-failures-group {
   margin-bottom: 24px;
 }
 

@@ -1193,7 +1193,7 @@ function renderKnowledgeCorpus(items) {
   }
 
   list.innerHTML = items.map(c => `
-    <div class="corpus-item">
+    <div class="corpus-case-card">
       <div class="corpus-case-header">
         <span class="corpus-case-id mono">#${esc(c.conversation_id)}</span>
         <span class="corpus-case-intent mono">${esc(c.historical_intent)}</span>
@@ -1222,7 +1222,8 @@ async function loadFailures() {
     const failures = data.top_failures || [];
 
     // Group into 4 explicit categories: Classification, Retrieval, Safety, Escalation
-    const groups = {
+    // groups placeholder
+    const old_groups = {
       'Safety': [],
       'Retrieval': [],
       'Classification': [],
