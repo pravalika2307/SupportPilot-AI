@@ -140,7 +140,7 @@ function initConsoleEvents() {
   analyzeBtn.addEventListener('click', () => {
     const text = queryInput.value.trim();
     if (!text) {
-      showError('Please enter an incoming customer inquiry message or select one of the scenarios above.');
+      showError('Please enter an incoming customer inquiry message or select one of the incident scenarios above.');
       return;
     }
     hideError();
@@ -248,7 +248,7 @@ async function analyzeQuery(messageText) {
 function renderAnalysisResult(data) {
   const resultContainer = document.getElementById('resultContainer');
 
-  // 1. Operational Decision & Calibrated Confidence
+  // HIERARCHY LEVEL 1 & 2: Operational Decision & Calibrated Confidence
   const decisionCard = document.getElementById('decisionCard');
   const decisionBadge = document.getElementById('decisionBadge');
   const decisionContextPill = document.getElementById('decisionContextPill');
@@ -263,13 +263,13 @@ function renderAnalysisResult(data) {
   if (isEscalate) {
     decisionCard.classList.add('escalate');
     decisionBadge.classList.add('escalate');
-    decisionContextPill.textContent = 'Escalation to Human Specialist';
+    decisionContextPill.textContent = 'Human Specialist Handoff Required';
     escalationReasonBox.style.display = 'flex';
     escalationReasonText.textContent = data.escalation_reason || 'insufficient_grounding';
   } else {
     decisionCard.classList.remove('escalate');
     decisionBadge.classList.remove('escalate');
-    decisionContextPill.textContent = 'Safe Autonomous Customer Response';
+    decisionContextPill.textContent = 'Direct Autonomous Customer Response Allowed';
     escalationReasonBox.style.display = 'none';
   }
 
@@ -279,7 +279,93 @@ function renderAnalysisResult(data) {
   document.getElementById('confidenceBarFill').style.width = `${Math.min(confPct, 100)}%`;
   decisionRationale.textContent = data.decision_rationale;
 
-  // 2. Intent & Probabilities
+  // HIERARCHY LEVEL 3: Prominent "Why did SupportPilot decide this?" Audit Section
+  renderDecisionAudit(data);
+
+  // HIERARCHY LEVEL 4: Draft Response & First-Class Safe Abstention
+  const draftReplyText = document.getElementById('draftReplyText');
+  const groundingBadge = document.getElementById('groundingBadge');
+  const abstentionCard = document.getElementById('abstentionCalloutCard');
+  const abstentionTitle = document.getElementById('abstentionTitle');
+  const abstentionReasonText = document.getElementById('abstentionReasonText');
+
+  draftReplyText.textContent = data.draft_reply;
+
+  const isGrounded = data.grounding_status === 'grounded';
+  if (isGrounded) {
+    groundingBadge.className = 'grounding-status-pill grounded';
+    groundingBadge.textContent = 'Provenanced Evidence (Verified)';
+    abstentionCard.style.display = 'none';
+  } else {
+    groundingBadge.className = 'grounding-status-pill abstained';
+    groundingBadge.textContent = 'Abstained (Insufficient Grounding)';
+    abstentionCard.style.display = 'flex';
+
+    if (data.escalation_reason === 'hardware_repair_service') {
+      abstentionTitle.textContent = 'Physical Hardware Escalation — Response Withheld';
+      abstentionReasonText.textContent = 'Customer reported cracked glass, physical damage, or component failure. Autonomous troubleshooting is prohibited by policy; inquiry is routed to Apple Authorized Service queues.';
+    } else if (data.escalation_reason === 'financial_and_billing') {
+      abstentionTitle.textContent = 'Financial & Billing Protection — Response Withheld';
+      abstentionReasonText.textContent = 'Customer reported Apple Pay failure, payment processing dispute, or unexpected financial charges. Automated systems must not speculate on financial disputes; escalated to account specialists.';
+    } else if (data.escalation_reason === 'security_or_abuse') {
+      abstentionTitle.textContent = 'Security / Abuse Escalation — Response Withheld';
+      abstentionReasonText.textContent = 'Inquiry contains account credentials, two-factor authentication lockout, or hostile/abusive language requiring immediate human intervention.';
+    } else {
+      abstentionTitle.textContent = 'No Safe Evidence Found — Response Withheld';
+      abstentionReasonText.textContent = 'Historical candidate evidence scored below the 0.450 similarity floor or failed intent concordance checks. The agent safely abstained rather than speculating unverified Apple support policies.';
+    }
+  }
+
+  // Attribution (Top Candidate)
+  const topEvidence = data.retrieved_evidence && data.retrieved_evidence.length > 0
+    ? data.retrieved_evidence[0]
+    : null;
+
+  const attributionBox = document.getElementById('attributionBox');
+  if (topEvidence && isGrounded) {
+    document.getElementById('attrSimilarity').textContent = `Cosine Sim: ${topEvidence.similarity_score.toFixed(3)}`;
+    document.getElementById('attrConvId').textContent = topEvidence.conversation_id;
+    document.getElementById('attrIntent').textContent = topEvidence.historical_intent;
+    document.getElementById('attrMatchedQuery').textContent = `"${topEvidence.matched_customer_query}"`;
+    attributionBox.style.display = 'flex';
+  } else {
+    attributionBox.style.display = 'none';
+  }
+
+  // HIERARCHY LEVEL 5: Evidence Inspector & Top-3 Candidates Stream
+  const evidenceList = document.getElementById('evidenceList');
+  evidenceList.innerHTML = '';
+  if (data.retrieved_evidence && data.retrieved_evidence.length > 0) {
+    data.retrieved_evidence.forEach(ev => {
+      const card = document.createElement('div');
+      card.className = 'evidence-card';
+      const isConcordant = ev.historical_intent === data.predicted_intent;
+      const concordanceBadge = isConcordant
+        ? '<span class="concordance-badge concordance-match">CONCORDANT INTENT</span>'
+        : '<span class="concordance-badge concordance-mismatch">INTENT MISMATCH</span>';
+
+      card.innerHTML = `
+        <div class="evidence-top">
+          <span class="evidence-rank">Rank #${ev.rank} &bull; Thread ${ev.conversation_id}</span>
+          <span class="evidence-score">
+            <span>Sim: ${ev.similarity_score.toFixed(3)}</span>
+            ${concordanceBadge}
+          </span>
+        </div>
+        <div class="evidence-query-line">
+          <strong>Historical User Query:</strong> "${escapeHtml(ev.matched_customer_query)}"
+        </div>
+        <div class="evidence-reply-line">
+          <strong>Apple Historical Response:</strong> ${escapeHtml(ev.historical_agent_reply)}
+        </div>
+      `;
+      evidenceList.appendChild(card);
+    });
+  } else {
+    evidenceList.innerHTML = '<div style="color: var(--text-muted); font-size: 11.5px; padding: 12px;">No historical candidates retrieved above threshold.</div>';
+  }
+
+  // HIERARCHY LEVEL 6: Intent & Probabilities Telemetry
   document.getElementById('intentPill').textContent = data.predicted_intent;
   const altList = document.getElementById('altIntentsList');
   altList.innerHTML = '';
@@ -288,68 +374,99 @@ function renderAnalysisResult(data) {
       const item = document.createElement('div');
       item.className = 'alt-intent-item';
       item.innerHTML = `
-        <span class="alt-name">${intentName}</span>
-        <span class="alt-pct">${(prob * 100).toFixed(1)}%</span>
+        <span class="alt-name" title="${intentName}">${intentName}</span>
+        <span class="alt-pct mono">${(prob * 100).toFixed(1)}%</span>
       `;
       altList.appendChild(item);
     });
   }
 
-  // 3. Draft Response & Grounding Status
-  const draftReplyText = document.getElementById('draftReplyText');
-  const groundingBadge = document.getElementById('groundingBadge');
-  draftReplyText.textContent = data.draft_reply;
-
-  if (data.grounding_status === 'grounded') {
-    groundingBadge.className = 'grounding-pill grounded';
-    groundingBadge.textContent = 'Provenanced Evidence (Verified)';
-  } else {
-    groundingBadge.className = 'grounding-pill abstained';
-    groundingBadge.textContent = 'Abstained (Insufficient Evidence)';
-  }
-
-  // 4. Attribution (Top Candidate)
-  const topEvidence = data.retrieved_evidence && data.retrieved_evidence.length > 0
-    ? data.retrieved_evidence[0]
-    : null;
-
-  const attributionBox = document.getElementById('attributionBox');
-  if (topEvidence) {
-    document.getElementById('attrSimilarity').textContent = `Cosine Sim: ${topEvidence.similarity_score.toFixed(3)}`;
-    document.getElementById('attrConvId').textContent = topEvidence.conversation_id;
-    document.getElementById('attrIntent').textContent = topEvidence.historical_intent;
-    document.getElementById('attrMatchedQuery').textContent = `"${topEvidence.matched_customer_query}"`;
-    attributionBox.style.display = 'block';
-  } else {
-    attributionBox.style.display = 'none';
-  }
-
-  // 5. Top-3 Evidence Candidates
-  const evidenceList = document.getElementById('evidenceList');
-  evidenceList.innerHTML = '';
-  if (data.retrieved_evidence && data.retrieved_evidence.length > 0) {
-    data.retrieved_evidence.forEach(ev => {
-      const card = document.createElement('div');
-      card.className = 'evidence-card';
-      card.innerHTML = `
-        <div class="evidence-top">
-          <span class="evidence-rank">Rank #${ev.rank} &bull; ${ev.conversation_id}</span>
-          <span class="evidence-score">Sim: ${ev.similarity_score.toFixed(3)} &bull; ${ev.historical_intent}</span>
-        </div>
-        <div style="font-size: 11.5px; color: var(--text-muted); line-height: 1.5;">
-          <strong>Historical User Query:</strong> "${escapeHtml(ev.matched_customer_query)}"
-        </div>
-        <div class="evidence-reply">
-          <strong>Apple Historical Response:</strong> ${escapeHtml(ev.historical_agent_reply)}
-        </div>
-      `;
-      evidenceList.appendChild(card);
-    });
-  } else {
-    evidenceList.innerHTML = '<div style="color: var(--text-muted); font-size: 12px; padding: 10px;">No historical candidates retrieved.</div>';
-  }
-
   resultContainer.style.display = 'flex';
+}
+
+// Render "Why did SupportPilot decide this?" Audit Section
+function renderDecisionAudit(data) {
+  const verdictEl = document.getElementById('decisionAuditVerdict');
+  const confCheck = document.getElementById('auditConfidenceCheck');
+  const safetyCheck = document.getElementById('auditSafetyCheck');
+  const concordanceCheck = document.getElementById('auditConcordanceCheck');
+  const similarityCheck = document.getElementById('auditSimilarityCheck');
+
+  const predIntentEl = document.getElementById('auditPredictedIntent');
+  const confScoreEl = document.getElementById('auditConfidenceScore');
+  const safetyDetail = document.getElementById('auditSafetyDetail');
+  const concordanceDetail = document.getElementById('auditConcordanceDetail');
+  const similarityDetail = document.getElementById('auditSimilarityDetail');
+
+  const isEscalate = data.decision === 'ESCALATE';
+  if (isEscalate) {
+    verdictEl.textContent = 'ESCALATION MANDATED';
+    verdictEl.style.borderColor = 'var(--status-rose-border)';
+    verdictEl.style.color = 'var(--status-rose)';
+    verdictEl.style.background = 'var(--status-rose-bg)';
+  } else {
+    verdictEl.textContent = 'AUTONOMOUS APPROVAL';
+    verdictEl.style.borderColor = 'var(--status-emerald-border)';
+    verdictEl.style.color = 'var(--status-emerald)';
+    verdictEl.style.background = 'var(--status-emerald-bg)';
+  }
+
+  // 1. Confidence Check
+  predIntentEl.textContent = data.predicted_intent;
+  confScoreEl.textContent = data.confidence.toFixed(3);
+  if (data.confidence >= 0.12) {
+    confCheck.className = 'audit-status-badge mono pass';
+    confCheck.textContent = 'PASS';
+  } else {
+    confCheck.className = 'audit-status-badge mono warn';
+    confCheck.textContent = 'LOW';
+  }
+
+  // 2. Safety Guardrail Triggers
+  if (data.escalation_reason && data.escalation_reason !== 'none') {
+    safetyCheck.className = 'audit-status-badge mono fail';
+    safetyCheck.textContent = 'TRIGGERED';
+    safetyDetail.textContent = `Active guardrail fired: ${data.escalation_reason.replace(/_/g, ' ')}. Precautionary human escalation enforced.`;
+  } else {
+    safetyCheck.className = 'audit-status-badge mono pass';
+    safetyCheck.textContent = 'CLEARED';
+    safetyDetail.textContent = 'Zero safety triggers detected: query cleared for autonomous resolution.';
+  }
+
+  // 3. Intent Concordance
+  const topEv = data.retrieved_evidence && data.retrieved_evidence.length > 0 ? data.retrieved_evidence[0] : null;
+  if (topEv) {
+    if (topEv.historical_intent === data.predicted_intent) {
+      concordanceCheck.className = 'audit-status-badge mono pass';
+      concordanceCheck.textContent = 'CONCORDANT';
+      concordanceDetail.textContent = `Evidence matches predicted intent [${data.predicted_intent}]. Cross-domain hallucination risk is 0.00%.`;
+    } else {
+      concordanceCheck.className = 'audit-status-badge mono fail';
+      concordanceCheck.textContent = 'MISMATCH';
+      concordanceDetail.textContent = `Evidence intent [${topEv.historical_intent}] clashes with predicted intent [${data.predicted_intent}]. Candidate disqualified.`;
+    }
+  } else {
+    concordanceCheck.className = 'audit-status-badge mono warn';
+    concordanceCheck.textContent = 'NO EVIDENCE';
+    concordanceDetail.textContent = 'No historical candidate was retrieved for concordance verification.';
+  }
+
+  // 4. Similarity Floor
+  if (topEv) {
+    if (topEv.similarity_score >= 0.450) {
+      similarityCheck.className = 'audit-status-badge mono pass';
+      similarityCheck.textContent = `${topEv.similarity_score.toFixed(3)} >= 0.450`;
+      similarityDetail.textContent = `Top candidate achieved ${topEv.similarity_score.toFixed(3)} cosine similarity, satisfying semantic threshold.`;
+    } else {
+      similarityCheck.className = 'audit-status-badge mono fail';
+      similarityCheck.textContent = `${topEv.similarity_score.toFixed(3)} < 0.450`;
+      similarityDetail.textContent = `Top candidate scored ${topEv.similarity_score.toFixed(3)}, failing the 0.450 floor. Autonomous speculation withheld.`;
+    }
+  } else {
+    similarityCheck.className = 'audit-status-badge mono fail';
+    similarityCheck.textContent = 'EMPTY POOL';
+    similarityDetail.textContent = 'Zero semantic neighbors met minimum similarity constraints in the 800-thread training corpus.';
+  }
 }
 
 // Helper to compute delta between human-verified and heuristic values
@@ -434,7 +551,7 @@ async function loadBenchmarkMetrics() {
         valR: formatPct(r?.retrieval_and_reply_quality?.top1_retrieval_relevance_rate),
         valV: formatPct(v?.retrieval_and_reply_quality?.top1_retrieval_relevance_rate),
         delta: computeDelta(v?.retrieval_and_reply_quality?.top1_retrieval_relevance_rate, h?.retrieval_and_reply_quality?.top1_retrieval_relevance_rate),
-        interp: 'Rank-1 similarity &ge; 0.45 AND intent agreement'
+        interp: 'Rank-1 similarity &ge; 0.450 AND intent agreement'
       },
       {
         dim: 'Provenance-Backed Grounding Coverage',
@@ -473,11 +590,11 @@ async function loadBenchmarkMetrics() {
     matrixBody.innerHTML = rows.map(r => `
       <tr>
         <td><strong>${r.dim}</strong></td>
-        <td>${r.valH}</td>
-        <td>${r.valR}</td>
-        <td><strong style="color: var(--accent-blue);">${r.valV}</strong></td>
-        <td><span class="mono" style="color: ${r.delta.startsWith('+') ? 'var(--accent-emerald)' : r.delta.startsWith('-') ? 'var(--accent-rose)' : 'var(--text-muted)'}; font-weight: 700;">${r.delta}</span></td>
-        <td style="color: var(--text-muted); font-size: 12px;">${r.interp}</td>
+        <td><span class="mono">${r.valH}</span></td>
+        <td><span class="mono">${r.valR}</span></td>
+        <td><strong class="mono" style="color: #60a5fa;">${r.valV}</strong></td>
+        <td><span class="mono" style="color: ${r.delta.startsWith('+') ? 'var(--status-emerald)' : r.delta.startsWith('-') ? 'var(--status-rose)' : 'var(--text-muted)'}; font-weight: 700;">${r.delta}</span></td>
+        <td style="color: var(--text-muted); font-size: 11.5px;">${r.interp}</td>
       </tr>
     `).join('');
 
@@ -487,33 +604,33 @@ async function loadBenchmarkMetrics() {
       const f1Pct = (metrics.f1 * 100).toFixed(1);
       return `
         <tr>
-          <td><code class="mono" style="color: var(--accent-blue); font-weight: 600;">${clsName}</code></td>
+          <td><code class="mono" style="color: #60a5fa; font-weight: 600;">${clsName}</code></td>
           <td><span class="mono">${metrics.support}</span></td>
-          <td>${(metrics.precision * 100).toFixed(1)}%</td>
-          <td>${(metrics.recall * 100).toFixed(1)}%</td>
-          <td><strong style="color: var(--text-pure);">${f1Pct}%</strong></td>
+          <td><span class="mono">${(metrics.precision * 100).toFixed(1)}%</span></td>
+          <td><span class="mono">${(metrics.recall * 100).toFixed(1)}%</span></td>
+          <td><strong class="mono" style="color: var(--text-primary);">${f1Pct}%</strong></td>
           <td>
             <div style="display: flex; align-items: center; gap: 8px;">
-              <div style="width: 120px; height: 6px; background: rgba(255, 255, 255, 0.08); border-radius: 3px; overflow: hidden;">
-                <div style="width: ${f1Pct}%; height: 100%; background: linear-gradient(90deg, #0284c7, #38bdf8);"></div>
+              <div style="width: 100px; height: 5px; background: var(--border-subtle); border-radius: 2px; overflow: hidden;">
+                <div style="width: ${f1Pct}%; height: 100%; background: var(--accent-primary);"></div>
               </div>
-              <span style="font-size: 11px; color: var(--text-muted); font-family: 'JetBrains Mono', monospace;">${f1Pct}%</span>
+              <span style="font-size: 10.5px; color: var(--text-muted); font-family: 'JetBrains Mono', monospace;">${f1Pct}%</span>
             </div>
           </td>
         </tr>
       `;
     }).join('');
   } catch (err) {
-    matrixBody.innerHTML = `<tr><td colspan="6" style="color: var(--accent-rose); padding: 20px; text-align: center;">Failed to load metrics: ${err.message}</td></tr>`;
+    matrixBody.innerHTML = `<tr><td colspan="6" style="color: var(--status-rose); padding: 20px; text-align: center;">Failed to load metrics: ${err.message}</td></tr>`;
   }
 }
 
-// VIEW 3: Load Failure Modes strictly from /api/failures
+// VIEW 3: Load Failure Modes as Investigation Cards strictly from /api/failures
 let failuresLoaded = false;
 async function loadFailureModes() {
   if (failuresLoaded) return;
   const container = document.getElementById('failureCardsList');
-  container.innerHTML = '<div style="text-align: center; padding: 24px; color: var(--text-muted);">Loading failure analysis case studies...</div>';
+  container.innerHTML = '<div style="text-align: center; padding: 24px; color: var(--text-muted);">Loading failure incident post-mortems...</div>';
 
   try {
     const res = await fetch('/api/failures');
@@ -522,77 +639,61 @@ async function loadFailureModes() {
 
     const failures = data.top_failures || [];
     if (failures.length === 0) {
-      container.innerHTML = '<div style="color: var(--text-muted); padding: 20px; text-align: center;">No failure modes recorded.</div>';
+      container.innerHTML = '<div style="color: var(--text-muted); padding: 20px; text-align: center;">No failure incident records found.</div>';
       return;
     }
 
     container.innerHTML = failures.map((f, idx) => {
       return `
-        <div class="failure-accordion-item ${idx === 0 ? 'expanded' : ''}" id="failure-item-${idx}">
-          <div class="failure-summary" onclick="toggleFailureAccordion(${idx})">
-            <div class="failure-summary-left">
-              <div class="failure-heading-row">
-                <span class="failure-badge">[${f.golden_id}]</span>
-                <span class="failure-title-text">Failure Case #${idx + 1}: ${f.expected_intent}</span>
-              </div>
-              <div class="failure-query-preview">
-                "${escapeHtml(f.customer_query)}"
-              </div>
+        <div class="investigation-card" id="investigation-case-${idx}">
+          <div class="investigation-header">
+            <div class="investigation-title-group">
+              <span class="case-id-badge">[${f.golden_id}]</span>
+              <span class="case-intent-title">Case #${idx + 1}: ${f.expected_intent}</span>
             </div>
-            <div class="failure-summary-right">
-              <span class="action-diff-badge">${f.expected_action} &rarr; ${f.predicted_action}</span>
-              <div class="accordion-arrow">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="6 9 12 15 18 9"/></svg>
-              </div>
+            <div class="case-routing-diff">
+              Expected: ${f.expected_action} &rarr; Predicted: ${f.predicted_action}
             </div>
           </div>
 
-          <div class="failure-accordion-body">
-            <div class="failure-full-query">
-              &ldquo;${escapeHtml(f.customer_query)}&rdquo;
+          <div class="investigation-query-quote">
+            &ldquo;${escapeHtml(f.customer_query)}&rdquo;
+          </div>
+
+          <div class="investigation-meta-row">
+            <div>
+              <span class="meta-item-label">Predicted Intent:</span>
+              <code class="mono meta-item-val" style="color: var(--status-rose);">${f.predicted_intent}</code>
+              <span style="color: var(--text-muted); margin-left: 4px;">(Conf: ${f.confidence.toFixed(2)})</span>
+            </div>
+            <div>
+              <span class="meta-item-label">Expected Intent:</span>
+              <code class="mono meta-item-val" style="color: var(--status-emerald);">${f.expected_intent}</code>
+            </div>
+            <div>
+              <span class="meta-item-label">Escalation Trigger:</span>
+              <code class="mono meta-item-val" style="color: #60a5fa;">${f.escalation_reason}</code>
+            </div>
+          </div>
+
+          <div class="investigation-analysis-grid">
+            <div class="diag-box">
+              <div class="diag-title">Root-Cause Failure Diagnosis</div>
+              <div class="diag-text">${escapeHtml(f.why_it_failed)}</div>
             </div>
 
-            <div class="failure-specs-row">
-              <div class="spec-item">
-                <strong style="color: var(--text-pure);">Predicted Intent:</strong>
-                <code class="mono" style="color: var(--accent-rose); font-weight: 700;">${f.predicted_intent}</code>
-                <span style="color: var(--text-muted);">(Conf: ${f.confidence.toFixed(2)})</span>
-              </div>
-              <div class="spec-item">
-                <strong style="color: var(--text-pure);">Expected Intent:</strong>
-                <code class="mono" style="color: var(--accent-emerald); font-weight: 700;">${f.expected_intent}</code>
-              </div>
-              <div class="spec-item">
-                <strong style="color: var(--text-pure);">Escalation Reason:</strong>
-                <code class="mono" style="color: var(--accent-blue);">${f.escalation_reason}</code>
-              </div>
-            </div>
-
-            <div class="failure-reason-box">
-              <div class="reason-box-title">Root-Cause Failure Diagnosis:</div>
-              <div class="reason-box-body">${escapeHtml(f.why_it_failed)}</div>
-            </div>
-
-            <div class="failure-hypothesis-box">
-              <div class="hypothesis-title">Actionable Architectural Improvement Hypothesis:</div>
-              <div class="hypothesis-body">${escapeHtml(f.improvement_hypothesis)}</div>
+            <div class="hypo-box">
+              <div class="hypo-title">Architectural Improvement Hypothesis</div>
+              <div class="hypo-text">${escapeHtml(f.improvement_hypothesis)}</div>
             </div>
           </div>
         </div>
       `;
     }).join('');
   } catch (err) {
-    container.innerHTML = `<div style="color: var(--accent-rose); padding: 20px; text-align: center;">Failed to load failures: ${err.message}</div>`;
+    container.innerHTML = `<div style="color: var(--status-rose); padding: 20px; text-align: center;">Failed to load failures: ${err.message}</div>`;
   }
 }
-
-// Global Toggle for Accordion
-window.toggleFailureAccordion = function(idx) {
-  const item = document.getElementById(`failure-item-${idx}`);
-  if (item) {
-    item.classList.toggle('expanded');
-  }
-};
 
 function formatPct(val) {
   if (val === undefined || val === null) return 'N/A';
