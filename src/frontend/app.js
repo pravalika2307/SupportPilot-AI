@@ -1222,8 +1222,7 @@ async function loadFailures() {
     const failures = data.top_failures || [];
 
     // Group into 4 explicit categories: Classification, Retrieval, Safety, Escalation
-    // groups placeholder
-    const old_groups = {
+    const groups = {
       'Safety': [],
       'Retrieval': [],
       'Classification': [],

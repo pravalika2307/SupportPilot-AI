@@ -2546,8 +2546,7 @@ body {
 }
 
 /* 9. Failures Taxonomy Groups */
-/* .failures-group-section disabled in c9 */
-.disabled-failures-group {
+.failures-group-section {
   margin-bottom: 24px;
 }
 
