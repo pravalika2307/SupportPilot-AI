@@ -134,7 +134,8 @@ This document records **14 architectural and algorithmic decisions** made across
   1. Generate synthetic 4.5/5.0 scores to present a complete metrics table.
   2. Report status as `not_run`, preserve the exact schema and rubric, and document the absence of live API keys.
 * **Rationale**: Scientific and engineering integrity. Fabricated metrics mask pipeline deficiencies and destroy credibility. Real benchmarks must reflect only verified computations.
-* **Tradeoffs**: Headline metrics table displays `not_run` for the LLM judge dimension, requiring transparent documentation.
+* **Tradeoffs**: Required transparent limitation disclosure until live credentials were provided.
+* **Empirical Execution**: Once an authentic Gemini API key was configured, the complete 40-example judge study ran against `gemini-3.5-flash` with zero score fabrication, producing authentic quadratic-weighted Cohen's $\kappa$ metrics ($\text{macro } \kappa = -0.0122$, $\text{pooled } \kappa = 0.0690$) and revealing weak agreement driven by evaluator-perspective divergence (policy compliance vs. end-user utility), confirming that the LLM judge cannot serve as a standalone autonomous quality gate without human oversight.
 
 ---
 

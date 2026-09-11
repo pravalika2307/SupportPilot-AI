@@ -46,8 +46,13 @@ share/python-wheels/
 .coverage
 htmlcov/
 
-# Environments & IDEs
+# Environments, Secrets & API Keys (Never commit credentials)
 .env
+.env.*
+*.env
+!.env.example
+
+# IDEs & OS files
 .vscode/
 .idea/
 *.sublime-project

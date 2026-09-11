@@ -4,9 +4,11 @@ The LLM judge is dependency-injected: a run records no LLM metric until a real
 judge callable is supplied.  This avoids reporting invented model judgments.
 """
 
+import math
 import re
 from typing import Any, Callable, Dict, Iterable, List
 
+import numpy as np
 from sklearn.metrics import cohen_kappa_score
 from src.models.reply_generation import GroundedReplyGenerator
 
@@ -28,7 +30,12 @@ class LLMReplyJudge:
 
     def judge(self, agent_output: Dict[str, Any]) -> Dict[str, int]:
         scores = self.judge_callable(agent_output, REPLY_QUALITY_RUBRIC)
-        if set(scores) != set(REPLY_QUALITY_RUBRIC):
+        normalized = dict(scores)
+        if "relevance" in normalized and "correctness" not in normalized:
+            normalized["correctness"] = normalized["relevance"]
+        elif "correctness" in normalized and "relevance" not in normalized:
+            normalized["relevance"] = normalized["correctness"]
+        if set(REPLY_QUALITY_RUBRIC).difference(normalized):
             raise ValueError("LLM judge must score every explicit rubric dimension.")
         if any(not isinstance(score, int) or not 1 <= score <= 5 for score in scores.values()):
             raise ValueError("LLM judge scores must be integers from 1 to 5.")
@@ -58,6 +65,38 @@ def deterministic_quality_checks(agent_outputs: Iterable[Dict[str, Any]]) -> Dic
     }
 
 
+def compute_dimension_kappa(human_scores: List[int], llm_scores: List[int]) -> Dict[str, Any]:
+    """Calculates quadratic Cohen's kappa for a single dimension with explicit zero-variance handling."""
+    if not human_scores or not llm_scores:
+        return {"kappa": 0.0, "zero_variance": False, "note": "Empty score list"}
+
+    all_same_h = len(set(human_scores)) <= 1
+    all_same_l = len(set(llm_scores)) <= 1
+
+    if all_same_h and all_same_l:
+        if human_scores[0] == llm_scores[0]:
+            return {
+                "kappa": 1.0,
+                "zero_variance": True,
+                "note": "Zero variance: 100% concordance on constant rating",
+            }
+        return {
+            "kappa": 0.0,
+            "zero_variance": True,
+            "note": "Zero variance: discordant constant ratings",
+        }
+
+    try:
+        val = cohen_kappa_score(human_scores, llm_scores, labels=[1, 2, 3, 4, 5], weights="quadratic")
+        if math.isnan(val) or np.isnan(val):
+            val = 1.0 if human_scores == llm_scores else 0.0
+            return {"kappa": val, "zero_variance": True, "note": "Zero chance variance resolved"}
+        return {"kappa": round(float(val), 4), "zero_variance": False}
+    except Exception as exc:
+        val = 1.0 if human_scores == llm_scores else 0.0
+        return {"kappa": val, "zero_variance": True, "note": f"Exception resolved: {exc}"}
+
+
 def _index_and_validate_labels(labels: List[Dict[str, Any]], source: str) -> Dict[str, Dict[str, Any]]:
     indexed = {}
     for row in labels:
@@ -66,25 +105,64 @@ def _index_and_validate_labels(labels: List[Dict[str, Any]], source: str) -> Dic
             raise ValueError(f"{source} annotation is missing golden_id")
         if golden_id in indexed:
             raise ValueError(f"Duplicate golden_id in {source} annotations: {golden_id}")
-        missing = set(REPLY_QUALITY_RUBRIC).difference(row)
+
+        # Support 'correctness' as an alias for 'relevance'
+        normalized = dict(row)
+        if "correctness" in normalized and "relevance" not in normalized:
+            normalized["relevance"] = normalized["correctness"]
+        elif "relevance" in normalized and "correctness" not in normalized:
+            normalized["correctness"] = normalized["relevance"]
+
+        missing = set(REPLY_QUALITY_RUBRIC).difference(normalized)
         if missing:
             raise ValueError(f"{source} annotation {golden_id} is missing rubric dimensions: {sorted(missing)}")
-        if any(not isinstance(row[key], int) or not 1 <= row[key] <= 5 for key in REPLY_QUALITY_RUBRIC):
+        if any(not isinstance(normalized[key], int) or not 1 <= normalized[key] <= 5 for key in REPLY_QUALITY_RUBRIC):
             raise ValueError(f"{source} annotation {golden_id} has an invalid 1-5 rubric score")
-        indexed[golden_id] = row
+        indexed[golden_id] = normalized
     return indexed
 
 
 def human_llm_agreement(human_labels: List[Dict[str, Any]], llm_labels: List[Dict[str, Any]]) -> Dict[str, Any]:
-    """Compute per-dimension Cohen's kappa for matched, real annotation IDs."""
+    """Compute per-dimension and overall quadratic Cohen's kappa for matched annotation IDs.
+
+    Explicitly handles duplicate IDs (raises ValueError) and zero-variance ratings.
+    """
     human_by_id = _index_and_validate_labels(human_labels, "human")
     llm_by_id = _index_and_validate_labels(llm_labels, "LLM")
     shared_ids = sorted(set(human_by_id).intersection(llm_by_id))
     if not shared_ids:
-        return {"matched_examples": 0, "kappa_by_dimension": {}}
+        return {
+            "matched_examples": 0,
+            "kappa_by_dimension": {},
+            "kappa_details": {},
+            "overall_macro_kappa": 0.0,
+            "overall_pooled_kappa": 0.0,
+            "kappa_weighting": "quadratic",
+        }
+
     kappas = {}
+    details = {}
+    all_human_pooled = []
+    all_llm_pooled = []
+
     for dimension in REPLY_QUALITY_RUBRIC:
-        human = [human_by_id[item][dimension] for item in shared_ids]
-        llm = [llm_by_id[item][dimension] for item in shared_ids]
-        kappas[dimension] = float(cohen_kappa_score(human, llm, weights="quadratic"))
-    return {"matched_examples": len(shared_ids), "kappa_by_dimension": kappas, "kappa_weighting": "quadratic"}
+        human_scores = [human_by_id[item][dimension] for item in shared_ids]
+        llm_scores = [llm_by_id[item][dimension] for item in shared_ids]
+        dim_res = compute_dimension_kappa(human_scores, llm_scores)
+        kappas[dimension] = dim_res["kappa"]
+        details[dimension] = dim_res
+        all_human_pooled.extend(human_scores)
+        all_llm_pooled.extend(llm_scores)
+
+    macro_kappa = round(float(np.mean(list(kappas.values()))), 4)
+    pooled_res = compute_dimension_kappa(all_human_pooled, all_llm_pooled)
+
+    return {
+        "matched_examples": len(shared_ids),
+        "kappa_by_dimension": kappas,
+        "kappa_details": details,
+        "overall_macro_kappa": macro_kappa,
+        "overall_pooled_kappa": pooled_res["kappa"],
+        "kappa_weighting": "quadratic",
+    }
+

@@ -1,0 +1,175 @@
+{
+  "timestamp": "2026-09-09T15:53:20.852234+00:00",
+  "study_sample_size": 40,
+  "matched_examples": 40,
+  "agreement_method": "quadratic_weighted_cohen_kappa",
+  "kappa_by_dimension": {
+    "groundedness": -0.0273,
+    "relevance": 0.0917,
+    "helpfulness": -0.0348,
+    "tone": -0.0519,
+    "safety": -0.0388,
+    "correctness": 0.0917
+  },
+  "kappa_details": {
+    "groundedness": {
+      "kappa": -0.0273,
+      "zero_variance": false
+    },
+    "relevance": {
+      "kappa": 0.0917,
+      "zero_variance": false
+    },
+    "helpfulness": {
+      "kappa": -0.0348,
+      "zero_variance": false
+    },
+    "tone": {
+      "kappa": -0.0519,
+      "zero_variance": false
+    },
+    "safety": {
+      "kappa": -0.0388,
+      "zero_variance": false
+    }
+  },
+  "overall_macro_kappa": -0.0122,
+  "overall_pooled_kappa": 0.069,
+  "score_distributions": {
+    "groundedness": {
+      "human_mean": 4.53,
+      "human_std": 0.77,
+      "human_score_counts": {
+        "3": 7,
+        "4": 5,
+        "5": 28
+      },
+      "llm_mean": 4.17,
+      "llm_std": 1.53,
+      "llm_score_counts": {
+        "1": 7,
+        "3": 2,
+        "4": 1,
+        "5": 30
+      }
+    },
+    "correctness": {
+      "human_mean": 3.77,
+      "human_std": 0.72,
+      "human_score_counts": {
+        "3": 16,
+        "4": 17,
+        "5": 7
+      },
+      "llm_mean": 3.08,
+      "llm_std": 1.78,
+      "llm_score_counts": {
+        "1": 14,
+        "2": 3,
+        "3": 6,
+        "5": 17
+      }
+    },
+    "helpfulness": {
+      "human_mean": 4.05,
+      "human_std": 0.92,
+      "human_score_counts": {
+        "3": 16,
+        "4": 6,
+        "5": 18
+      },
+      "llm_mean": 2.85,
+      "llm_std": 1.74,
+      "llm_score_counts": {
+        "1": 16,
+        "2": 3,
+        "3": 5,
+        "4": 3,
+        "5": 13
+      }
+    },
+    "safety": {
+      "human_mean": 4.12,
+      "human_std": 0.9,
+      "human_score_counts": {
+        "3": 14,
+        "4": 7,
+        "5": 19
+      },
+      "llm_mean": 4.85,
+      "llm_std": 0.53,
+      "llm_score_counts": {
+        "3": 3,
+        "5": 37
+      }
+    },
+    "tone": {
+      "human_mean": 4.6,
+      "human_std": 0.7,
+      "human_score_counts": {
+        "3": 5,
+        "4": 6,
+        "5": 29
+      },
+      "llm_mean": 4.12,
+      "llm_std": 1.1,
+      "llm_score_counts": {
+        "1": 1,
+        "2": 1,
+        "3": 13,
+        "4": 2,
+        "5": 23
+      }
+    }
+  },
+  "distance_metrics": {
+    "groundedness": {
+      "exact_agreement_pct": 55.0,
+      "within_1_pct": 70.0,
+      "mean_absolute_error": 1.05
+    },
+    "correctness": {
+      "exact_agreement_pct": 15.0,
+      "within_1_pct": 42.5,
+      "mean_absolute_error": 1.65
+    },
+    "helpfulness": {
+      "exact_agreement_pct": 17.5,
+      "within_1_pct": 35.0,
+      "mean_absolute_error": 1.95
+    },
+    "safety": {
+      "exact_agreement_pct": 45.0,
+      "within_1_pct": 62.5,
+      "mean_absolute_error": 0.93
+    },
+    "tone": {
+      "exact_agreement_pct": 42.5,
+      "within_1_pct": 60.0,
+      "mean_absolute_error": 1.02
+    }
+  },
+  "schema_alignment_audit": {
+    "status": "verified_semantically_identical",
+    "dimensions_evaluated": [
+      "groundedness",
+      "correctness",
+      "helpfulness",
+      "safety",
+      "tone"
+    ],
+    "note": "Both human and LLM judges evaluated 'correctness' using identical 1-5 definitions (1=unrelated/wrong, 3=partial, 5=accurate/direct). 'relevance' was a legacy rubric key aliased to 'correctness'; scores are identical (kappa=0.0917)."
+  },
+  "disagreement_diagnosis": {
+    "evaluator_perspective_divergence": "Human rater evaluated system policy compliance (awarding 4-5s for safe abstentions and official Apple tweets), whereas LLM judge evaluated end-customer conversational utility (penalizing internal fallback strings with 1s).",
+    "canned_reply_hallucination_detection": "LLM judge caught nuanced mismatches in historical canned replies (e.g. asking for iOS version when already provided, or claiming 'we got your DM' on public tweets).",
+    "marginal_prevalence_kappa_paradox": "Human ratings have low variance (>70% 5s on groundedness/tone), which inflates expected chance agreement Pe. Even with 60-70% within-1 score agreement, modest discordances drive quadratic Cohen's kappa near zero."
+  },
+  "rubric": {
+    "groundedness": "1: unsupported; 3: partly supported; 5: every support claim is backed by the cited historical reply.",
+    "relevance": "1: unrelated; 3: addresses part of the issue; 5: directly addresses the customer issue.",
+    "helpfulness": "1: no actionable next step; 3: some useful guidance; 5: clear, actionable, appropriate guidance.",
+    "tone": "1: hostile or dismissive; 3: neutral; 5: empathetic and professional.",
+    "safety": "1: unsafe or unsupported policy; 3: uncertain; 5: no unsupported policy and appropriate escalation."
+  }
+}
