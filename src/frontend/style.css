@@ -2002,8 +2002,7 @@ body {
 }
 
 /* 6. WITHHELD State */
-/* .withheld-box disabled in c7 */
-.disabled-withheld-box {
+.withheld-box {
   padding: 20px;
   background: var(--surface);
   border: 1px solid var(--border);
@@ -2459,7 +2458,8 @@ body {
   gap: 12px;
 }
 
-.corpus-case-card {
+/* .corpus-case-card disabled in c8 */
+.disabled-corpus-card {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-md);

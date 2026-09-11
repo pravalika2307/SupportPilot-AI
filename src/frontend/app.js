@@ -1104,7 +1104,7 @@ function renderAnalyzeResult(data, query, container) {
     ${renderDecisionSignalsHtml(data)}
 
     <!-- 6. WITHHELD STATE SPECIAL CARD (If Withheld) -->
-    <!-- withheld card placeholder -->
+    ${caseState === 'WITHHELD' ? renderWithheldBoxHtml(data) : ''}
 
     <!-- 4. EVIDENCE COMPARISON -->
     <div class="result-card">
@@ -1193,7 +1193,7 @@ function renderKnowledgeCorpus(items) {
   }
 
   list.innerHTML = items.map(c => `
-    <div class="corpus-case-card">
+    <div class="corpus-item">
       <div class="corpus-case-header">
         <span class="corpus-case-id mono">#${esc(c.conversation_id)}</span>
         <span class="corpus-case-intent mono">${esc(c.historical_intent)}</span>
