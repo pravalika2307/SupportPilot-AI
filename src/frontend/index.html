@@ -3,682 +3,485 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SupportPilot AI — Customer Support Operations Console</title>
-  <meta name="description" content="Production-grade AI Customer Support Operations Console for AppleSupport with provenance-backed evidence retrieval and fail-closed safety escalation.">
+  <title>SupportPilot AI</title>
+  <meta name="description" content="SupportPilot decides whether customer support answers are safe, evidence-grounded, or require human specialist escalation.">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 28' fill='none'><path d='M8 9C8 6.79 9.79 5 12 5H17.5C19.71 5 21.5 6.79 21.5 9C21.5 11.21 19.71 13 17.5 13H11C9.07 13 7.5 14.57 7.5 16.5C7.5 17.88 8.62 19 10 19H13' stroke='%233D6FE8' stroke-width='2.2' stroke-linecap='round'/><path d='M20 19C20 21.21 18.21 23 16 23H10.5C8.29 23 6.5 21.21 6.5 19C6.5 16.79 8.29 15 10.5 15H17C18.93 15 20.5 13.43 20.5 11.5C20.5 10.12 19.38 9 18 9H15' stroke='%233D6FE8' stroke-width='2.2' stroke-linecap='round'/></svg>">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
 
-  <!-- Enterprise Top Navigation Bar -->
-  <header class="app-header">
-    <div class="header-inner">
-      <div class="brand">
-        <div class="brand-icon">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+<!-- 1. APPLICATION LOADING SCREEN -->
+<div class="app-loader" id="appLoader">
+  <div class="loader-card">
+    <div class="loader-brand-header">
+      <svg class="logo-mark loader-logo" viewBox="0 0 28 28" fill="none" aria-hidden="true">
+        <path d="M8 9C8 6.79 9.79 5 12 5H17.5C19.71 5 21.5 6.79 21.5 9C21.5 11.21 19.71 13 17.5 13H11C9.07 13 7.5 14.57 7.5 16.5C7.5 17.88 8.62 19 10 19H13" stroke="#3D6FE8" stroke-width="2.2" stroke-linecap="round"/>
+        <path d="M20 19C20 21.21 18.21 23 16 23H10.5C8.29 23 6.5 21.21 6.5 19C6.5 16.79 8.29 15 10.5 15H17C18.93 15 20.5 13.43 20.5 11.5C20.5 10.12 19.38 9 18 9H15" stroke="#3D6FE8" stroke-width="2.2" stroke-linecap="round"/>
+      </svg>
+      <div class="loader-brand-title">SupportPilot</div>
+    </div>
+    <div class="loader-tagline">“Decide what is safe to automate.”</div>
+    <div class="loader-checklist">
+      <div class="loader-chk-row" id="chk-model">
+        <span class="chk-label">Intent model</span>
+        <span class="chk-icon" id="chk-icon-model">✓</span>
+      </div>
+      <div class="loader-chk-row" id="chk-retriever">
+        <span class="chk-label">Evidence index</span>
+        <span class="chk-icon" id="chk-icon-retriever">✓</span>
+      </div>
+      <div class="loader-chk-row" id="chk-safety">
+        <span class="chk-label">Safety rules</span>
+        <span class="chk-icon" id="chk-icon-safety">✓</span>
+      </div>
+    </div>
+    <div class="loader-ready-row" id="chk-ready">
+      <span class="status-dot-sm online"></span>
+      <span class="chk-ready-text">Agent ready</span>
+    </div>
+  </div>
+</div>
+
+<div class="app-shell">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-top">
+      <a class="sidebar-brand" href="/" aria-label="SupportPilot home">
+        <svg class="logo-mark" viewBox="0 0 28 28" fill="none" aria-hidden="true">
+          <path d="M8 9C8 6.79 9.79 5 12 5H17.5C19.71 5 21.5 6.79 21.5 9C21.5 11.21 19.71 13 17.5 13H11C9.07 13 7.5 14.57 7.5 16.5C7.5 17.88 8.62 19 10 19H13" stroke="#3D6FE8" stroke-width="2.2" stroke-linecap="round"/>
+          <path d="M20 19C20 21.21 18.21 23 16 23H10.5C8.29 23 6.5 21.21 6.5 19C6.5 16.79 8.29 15 10.5 15H17C18.93 15 20.5 13.43 20.5 11.5C20.5 10.12 19.38 9 18 9H15" stroke="#3D6FE8" stroke-width="2.2" stroke-linecap="round"/>
+        </svg>
+        <span class="brand-name">SupportPilot</span>
+      </a>
+    </div>
+    <nav class="sidebar-nav" aria-label="Primary navigation">
+      <div class="nav-section-label">Workspace</div>
+      <button class="nav-item" data-view="analyze" id="nav-analyze">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="none">
+          <circle cx="7" cy="7" r="4.5" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M10.5 10.5L14 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+        <span>Analyze</span>
+        <span class="nav-badge live-pulse">Live</span>
+      </button>
+      <button class="nav-item active" data-view="inbox" id="nav-inbox">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="none">
+          <rect x="2" y="3" width="12" height="2" rx="1" fill="currentColor" opacity=".5"/>
+          <rect x="2" y="7" width="12" height="2" rx="1" fill="currentColor"/>
+          <rect x="2" y="11" width="8" height="2" rx="1" fill="currentColor" opacity=".5"/>
+        </svg>
+        <span>Inbox</span>
+        <span class="nav-badge" id="inboxCount">6</span>
+      </button>
+      <div class="nav-section-label" style="margin-top:12px;">Intelligence</div>
+      <button class="nav-item" data-view="knowledge" id="nav-knowledge">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="none">
+          <rect x="3" y="2" width="8" height="10" rx="1" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M5 5h4M5 7.5h3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+        </svg>
+        <span>Knowledge</span>
+      </button>
+      <button class="nav-item" data-view="evaluation" id="nav-evaluation">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="none">
+          <path d="M2 12L5.5 7 8.5 9.5 12 4 14 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span>Evaluation</span>
+      </button>
+      <button class="nav-item" data-view="failures" id="nav-failures">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="none">
+          <circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M8 5v3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          <circle cx="8" cy="11" r=".8" fill="currentColor"/>
+        </svg>
+        <span>Failures</span>
+      </button>
+    </nav>
+    <div class="sidebar-bottom">
+      <div class="agent-status">
+        <span class="status-dot" id="statusDot"></span>
+        <span id="statusText">Agent Ready</span>
+      </div>
+      <button class="sidebar-footer-btn" id="systemDetailsBtn">
+        <svg viewBox="0 0 16 16" fill="none" width="12" height="12">
+          <rect x="2" y="2" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1.3"/>
+          <rect x="9" y="2" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1.3"/>
+          <rect x="2" y="9" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1.3"/>
+          <rect x="9" y="9" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1.3"/>
+        </svg>
+        System Details
+      </button>
+    </div>
+  </aside>
+
+  <!-- MAIN AREA -->
+  <main class="main-area" id="mainArea">
+    <header class="topbar">
+      <div class="topbar-title">
+        <h1 class="page-title" id="pageTitle">Inbox</h1>
+        <span class="page-subtitle" id="pageSubtitle">Recent analyzed inquiries</span>
+      </div>
+      <div class="topbar-actions">
+        <span class="status-dot-sm online" id="topStatusDot"></span>
+        <span id="topStatusText">Agent Ready</span>
+        <button class="btn-ghost" id="topSystemDetailsBtn">System Details</button>
+      </div>
+    </header>
+
+    <!-- 1. ANALYZE (PRIMARY WOW SCREEN) -->
+    <section class="view" id="view-analyze">
+      
+      <!-- 11. CORE MOTTO BANNER -->
+      <!-- motto placeholder -->
+        <div class="motto-badge">
+          <svg class="motto-icon" viewBox="0 0 28 28" fill="none" width="16" height="16">
+            <path d="M8 9C8 6.79 9.79 5 12 5H17.5C19.71 5 21.5 6.79 21.5 9C21.5 11.21 19.71 13 17.5 13H11C9.07 13 7.5 14.57 7.5 16.5C7.5 17.88 8.62 19 10 19H13" stroke="#3D6FE8" stroke-width="2.2" stroke-linecap="round"/>
+            <path d="M20 19C20 21.21 18.21 23 16 23H10.5C8.29 23 6.5 21.21 6.5 19C6.5 16.79 8.29 15 10.5 15H17C18.93 15 20.5 13.43 20.5 11.5C20.5 10.12 19.38 9 18 9H15" stroke="#3D6FE8" stroke-width="2.2" stroke-linecap="round"/>
           </svg>
+          <span>Core Principle</span>
         </div>
-        <div class="brand-text">
-          <div class="brand-title-row">
-            <span class="brand-title">SupportPilot AI</span>
-            <span class="env-pill">OPS CONSOLE</span>
-          </div>
-          <span class="brand-org">@AppleSupport Inbound Escalation &amp; Provenance Router</span>
+        <div class="motto-text">
+          &ldquo;Most AI support tools generate an answer. SupportPilot decides whether an answer is justified.&rdquo;
         </div>
       </div>
 
-      <nav class="nav-tabs" aria-label="Support console navigation">
-        <button class="nav-tab active" data-view="console">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
-          <span>Live Console</span>
+      <!-- 2. FIRST-TIME HOW-IT-WORKS PANEL (Dismissible) -->
+      <!-- hiw placeholder -->
+        <div class="hiw-header">
+          <div class="hiw-title-wrap">
+            <span class="hiw-badge">Architecture</span>
+            <span class="hiw-title">How SupportPilot Works</span>
+          </div>
+          <button class="hiw-dismiss" id="dismissHiwBtn" title="Dismiss introduction">
+            <span>Dismiss</span> &times;
+          </button>
+        </div>
+        <div class="hiw-grid">
+          <div class="hiw-card">
+            <div class="hiw-step-num">01</div>
+            <div class="hiw-step-title">Understand customer</div>
+            <div class="hiw-step-desc">Classify intent across 12 Apple categories with confidence thresholding (0.12).</div>
+          </div>
+          <div class="hiw-card">
+            <div class="hiw-step-num">02</div>
+            <div class="hiw-step-title">Find historical evidence</div>
+            <div class="hiw-step-desc">Dense vector retrieval over 800 isolated historical cases (floor &ge; 0.450).</div>
+          </div>
+          <div class="hiw-card">
+            <div class="hiw-step-num">03</div>
+            <div class="hiw-step-title">Verify safety</div>
+            <div class="hiw-step-desc">Guardrails screen for hardware physical damage, 2FA lockouts, and billing disputes.</div>
+          </div>
+          <div class="hiw-card">
+            <div class="hiw-step-num">04</div>
+            <div class="hiw-step-title">Decide</div>
+            <div class="hiw-step-desc">Triple-state policy determines if autonomous response is justified or routed to a human.</div>
+          </div>
+        </div>
+        <div class="hiw-outcomes">
+          <span class="hiw-outcomes-label">Outcomes:</span>
+          <span class="hiw-pill hiw-auto"><strong>AUTO-HANDLE</strong> Safe to answer with verified historical evidence</span>
+          <span class="hiw-pill hiw-escalate"><strong>ESCALATE</strong> Direct safety trigger handed to human specialist</span>
+          <span class="hiw-pill hiw-withheld"><strong>WITHHELD</strong> Chose not to guess due to evidence/concordance gap</span>
+        </div>
+      </div>
+
+      <!-- 1. ANALYZER HERO -->
+      <div class="analyzer-hero">
+        <h2 class="analyzer-title">SupportPilot Analyzer</h2>
+        <p class="analyzer-desc">Paste a customer message. SupportPilot decides whether it can safely answer, needs stronger evidence, or should hand the case to a specialist.</p>
+      </div>
+
+      <div class="analyze-layout">
+        <div class="analyze-left">
+          <label class="form-label" for="analyzeInput">Customer message</label>
+          <textarea class="analyze-textarea" id="analyzeInput" rows="6" placeholder="Paste or type a customer support message..." maxlength="2000"></textarea>
+          <div class="analyze-bar">
+            <span class="char-count" id="charCount">0 / 2000</span>
+            <button class="btn-primary" id="analyzeBtn">Analyze Inquiry</button>
+          </div>
+
+          <!-- 10. REAL-TIME SUBTLE PIPELINE PROGRESS -->
+          <div class="pipeline-line" id="pipelineLine" style="display:none;">
+            <span class="pipe-step" id="pstep-1"><span class="step-num">01</span> Classifying</span>
+            <span class="pipe-arrow">&#8594;</span>
+            <span class="pipe-step" id="pstep-2"><span class="step-num">02</span> Retrieving</span>
+            <span class="pipe-arrow">&#8594;</span>
+            <span class="pipe-step" id="pstep-3"><span class="step-num">03</span> Verifying</span>
+            <span class="pipe-arrow">&#8594;</span>
+            <span class="pipe-step" id="pstep-4"><span class="step-num">04</span> Deciding</span>
+          </div>
+
+          <div class="demo-section">
+            <div class="demo-label">Demo inquiries (6 production scenarios)</div>
+            <div class="demo-pills">
+              <button class="demo-pill" data-query="How do I turn on low power mode on iPhone 7? My battery drains fast.">Battery drain</button>
+              <button class="demo-pill" data-query="My iPhone screen is completely cracked and shattered after dropping it on the street.">Cracked screen</button>
+              <button class="demo-pill" data-query="I am locked out of my Apple ID and cannot receive 2FA verification codes.">Apple ID / 2FA</button>
+              <button class="demo-pill" data-query="why are my App Store categories in Spanish but everything else in English??">App Store language</button>
+              <button class="demo-pill" data-query="Ever since I upgraded to High Sierra, my media controls on the keyboard don't work with iTunes. Please help or fix it @AppleSupport">Keyboard / macOS</button>
+              <button class="demo-pill" data-query="My Apple Pay transaction failed at checkout and charged my account twice without receipt.">Apple Pay</button>
+            </div>
+          </div>
+
+          <!-- 1. WHAT SUPPORTPILOT EVALUATES -->
+          <!-- evaluates placeholder -->
+            <div class="evaluates-header">What SupportPilot evaluates</div>
+            <div class="evaluates-grid">
+              <div class="evaluates-item">
+                <div class="evaluates-item-name">Intent</div>
+                <div class="evaluates-item-desc">Multi-class classification across 12 Apple Support domains with confidence threshold (0.12).</div>
+              </div>
+              <div class="evaluates-item">
+                <div class="evaluates-item-name">Evidence</div>
+                <div class="evaluates-item-desc">Dense MiniLM similarity across 800 threads requiring &ge; 0.450 cosine similarity floor.</div>
+              </div>
+              <div class="evaluates-item">
+                <div class="evaluates-item-name">Safety</div>
+                <div class="evaluates-item-desc">Guardrails for physical damage, account lockout / 2FA, billing, and abusive language.</div>
+              </div>
+              <div class="evaluates-item">
+                <div class="evaluates-item-name">Decision</div>
+                <div class="evaluates-item-desc">Triple-state policy: Autonomous reply (AUTO-HANDLE), Specialist routing (ESCALATE), or Fail-closed (WITHHELD).</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="analyze-right" id="analyzeRight">
+          <div class="empty-state" id="analyzeEmpty">
+            <svg class="logo-mark" viewBox="0 0 28 28" fill="none" width="40" height="40" style="opacity:0.35;">
+              <path d="M8 9C8 6.79 9.79 5 12 5H17.5C19.71 5 21.5 6.79 21.5 9C21.5 11.21 19.71 13 17.5 13H11C9.07 13 7.5 14.57 7.5 16.5C7.5 17.88 8.62 19 10 19H13" stroke="#3D6FE8" stroke-width="2.2" stroke-linecap="round"/>
+              <path d="M20 19C20 21.21 18.21 23 16 23H10.5C8.29 23 6.5 21.21 6.5 19C6.5 16.79 8.29 15 10.5 15H17C18.93 15 20.5 13.43 20.5 11.5C20.5 10.12 19.38 9 18 9H15" stroke="#3D6FE8" stroke-width="2.2" stroke-linecap="round"/>
+            </svg>
+            <p>Select a demo inquiry or paste customer text to run analysis</p>
+          </div>
+          <div class="analyze-result" id="analyzeResult" style="display:none;"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- INBOX -->
+    <section class="view active" id="view-inbox">
+      <div class="inbox-toolbar">
+        <div class="inbox-search-wrap">
+          <svg class="search-icon" viewBox="0 0 16 16" fill="none" width="14" height="14">
+            <circle cx="7" cy="7" r="4.5" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M10.5 10.5L14 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          <input type="search" class="search-input" placeholder="Search inquiries..." id="inboxSearch">
+        </div>
+        <div class="inbox-filter-group" id="inboxFilterGroup">
+          <button class="filter-pill active" data-filter="all">All</button>
+          <button class="filter-pill" data-filter="auto">Auto-handle</button>
+          <button class="filter-pill" data-filter="escalate">Escalate</button>
+          <button class="filter-pill" data-filter="withheld">Withheld</button>
+        </div>
+        <div class="inbox-sort-wrap">
+          <label for="inboxSort" class="sort-label">Sort:</label>
+          <select id="inboxSort" class="sort-select">
+            <option value="newest">Newest</option>
+            <option value="decision">Decision</option>
+            <option value="intent">Intent</option>
+            <option value="quality">Evidence quality</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="inbox-summary">
+        <div class="summary-stats">
+          <span><strong id="statTotal">6</strong> analyzed</span>
+          <span class="stat-sep">&middot;</span>
+          <span class="stat-auto"><strong id="statAuto">1</strong> auto</span>
+          <span class="stat-sep">&middot;</span>
+          <span class="stat-escalate"><strong id="statEscalate">3</strong> escalated</span>
+          <span class="stat-sep">&middot;</span>
+          <span class="stat-withheld"><strong id="statWithheld">2</strong> withheld</span>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table class="cases-table">
+          <thead>
+            <tr><th>Case</th><th>Customer inquiry</th><th>Intent</th><th>Decision</th><th>Why</th><th>Time</th></tr>
+          </thead>
+          <tbody id="casesTableBody"></tbody>
+        </table>
+      </div>
+      <div class="inbox-footer">
+        Test a custom inquiry:
+        <button class="btn-link" id="inboxAnalyzeLink">Open Analyze</button>
+      </div>
+    </section>
+
+    <!-- CASE DETAIL (From Inbox) -->
+    <section class="view" id="view-case">
+      <div class="case-header">
+        <button class="back-btn" id="backToInbox">
+          <svg viewBox="0 0 16 16" fill="none" width="14" height="14">
+            <path d="M10 3L5 8l5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Back to Inbox
         </button>
-        <button class="nav-tab" data-view="evaluation">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg>
-          <span>Evaluation Benchmark</span>
-        </button>
-        <button class="nav-tab" data-view="safety">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-          <span>Failure &amp; Safety</span>
-        </button>
-      </nav>
-
-      <div class="header-status">
-        <div class="status-indicator">
-          <span class="status-dot"></span>
-          <span id="agentStatusText" class="mono">Agent Ready</span>
-        </div>
-        <div class="isolation-badge">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-          <span>ZERO LEAKAGE AUDITED</span>
-        </div>
+        <span class="case-id-badge" id="caseIdBadge">CASE-1048</span>
+        <span class="case-meta-text" id="caseMeta"></span>
+        <button class="btn-ghost btn-sm" id="reanalyzeBtn">Re-analyze in Workstation</button>
       </div>
-    </div>
-  </header>
-
-  <main class="main-container">
-    <!-- Executive Operational KPI Strip -->
-    <section class="kpi-strip" aria-label="System Performance Overview">
-      <div class="kpi-cell">
-        <div class="kpi-label">Intent Accuracy</div>
-        <div class="kpi-value-row">
-          <span class="kpi-num" id="kpiAccuracyVal">65.50%</span>
-          <span class="kpi-tag tag-neutral">12 Classes</span>
+      <div class="inquiry-block">
+        <div class="inquiry-label">Customer inquiry</div>
+        <div class="inquiry-text" id="caseInquiryText"></div>
+      </div>
+      <div class="decision-banner" id="decisionBanner">
+        <div class="decision-top">
+          <span class="decision-chip" id="decisionChip"></span>
+          <span class="decision-headline" id="decisionHeadline"></span>
         </div>
-        <div class="kpi-subtext">+1.50% over heuristic baseline &bull; Macro F1 65.47%</div>
+        <div class="decision-meta-row" id="decisionMetaRow"></div>
       </div>
 
-      <div class="kpi-cell">
-        <div class="kpi-label">Escalation Recall</div>
-        <div class="kpi-value-row">
-          <span class="kpi-num text-emerald" id="kpiRecallVal">88.33%</span>
-          <span class="kpi-tag tag-emerald">Safety Critical</span>
-        </div>
-        <div class="kpi-subtext">53 of 60 high-risk cases captured</div>
-      </div>
+      <div class="decision-signals-container" id="caseDecisionSignals"></div>
 
-      <div class="kpi-cell">
-        <div class="kpi-label">Provenance-Backed Grounding Coverage</div>
-        <div class="kpi-value-row">
-          <span class="kpi-num text-accent" id="kpiGroundingVal">70.50%</span>
-          <span class="kpi-tag tag-accent">Attribution</span>
-        </div>
-        <div class="kpi-subtext">141/200 provenanced historical replies</div>
+      <div class="case-tabs" id="caseTabs">
+        <button class="case-tab active" data-tab="why">Why</button>
+        <button class="case-tab" data-tab="evidence">Evidence</button>
+        <button class="case-tab" data-tab="reply">Reply</button>
+        <button class="case-tab" data-tab="replay">Replay</button>
+        <button class="case-tab" data-tab="system">System notes</button>
       </div>
+      <div class="tab-panel active" id="panel-why"></div>
+      <div class="tab-panel" id="panel-evidence"></div>
+      <div class="tab-panel" id="panel-reply"></div>
+      <div class="tab-panel" id="panel-replay"></div>
+      <div class="tab-panel" id="panel-system"></div>
+    </section>
 
-      <div class="kpi-cell">
-        <div class="kpi-label">Unsafe / Context-Bound Rate</div>
-        <div class="kpi-value-row">
-          <span class="kpi-num text-neutral" id="kpiUnsafeVal">0.00%</span>
-          <span class="kpi-tag tag-neutral">Fail-Closed</span>
+    <!-- 7. KNOWLEDGE PAGE (Searchable Historical Case Cards) -->
+    <section class="view" id="view-knowledge">
+      <div class="view-hero">
+        <div class="section-eyebrow">Historical Evidence Repository</div>
+        <h2 class="section-heading">Knowledge Corpus</h2>
+        <p class="section-desc">800 @AppleSupport threads strictly isolated from the 200-example evaluation benchmark. Each card represents a verified historical resolution.</p>
+        <div class="kstats-row">
+          <div class="kstat"><div class="kstat-val">800</div><div class="kstat-lbl">Corpus threads</div></div>
+          <div class="kstat"><div class="kstat-val">384</div><div class="kstat-lbl">MiniLM-L6 dims</div></div>
+          <div class="kstat"><div class="kstat-val">0</div><div class="kstat-lbl">Shared eval IDs</div></div>
+          <div class="kstat"><div class="kstat-val">0.45</div><div class="kstat-lbl">Grounding floor</div></div>
         </div>
-        <div class="kpi-subtext">0 leaked DMs, false policies, or hallucinated timelines</div>
+      </div>
+      <div class="search-bar-row">
+        <input type="search" class="search-input wide" id="corpusSearch" placeholder="Search by intent, query, or Apple response keywords...">
+      </div>
+      <div class="corpus-cards-container" id="corpusList"></div>
+    </section>
+
+    <!-- 8. EVALUATION PAGE -->
+    <section class="view" id="view-evaluation">
+      <div class="view-hero">
+        <div class="section-eyebrow">Benchmark Performance Audit</div>
+        <h2 class="section-heading">Model Evaluation</h2>
+        <p class="section-desc">SupportPilot is evaluated against a 200-ticket human-verified benchmark curated from production Apple Support interactions, strictly isolated from the 800-thread retrieval index. We measure whether the system accurately identifies intent, recalls safety risks, grounds responses in verified historical evidence, and prevents unsafe policy emissions.</p>
+        <div class="eval-audit-badge">200 human-verified cases &middot; 0 shared conversation IDs &middot; Reviewed by Pravalika</div>
+      </div>
+      <div class="metrics-row">
+        <div class="metric-card">
+          <div class="metric-value">65.50%</div>
+          <div class="metric-name">Intent Accuracy</div>
+          <div class="metric-sub">12 balanced classes (65.5%)</div>
+        </div>
+        <div class="metric-card metric-good">
+          <div class="metric-value">88.33%</div>
+          <div class="metric-name">Escalation Recall</div>
+          <div class="metric-sub">53 of 60 safety cases caught (88.3%)</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value">70.50%</div>
+          <div class="metric-name">Provenance-backed Grounding</div>
+          <div class="metric-sub">Attribution coverage (70.5%)</div>
+        </div>
+        <div class="metric-card metric-zero">
+          <div class="metric-value">0.00%</div>
+          <div class="metric-name">Unsafe Emitted Replies</div>
+          <div class="metric-sub">Zero leaked policies (0%)</div>
+        </div>
+      </div>
+      <div class="eval-section">
+        <h3 class="eval-section-title">Where SupportPilot Breaks</h3>
+        <div class="fq-grid">
+          <div class="fq-cell"><div class="fq-tag fq-classify">Classification</div><p>Boundary confusion on multi-symptom queries (rebooting Watch classified as network).</p></div>
+          <div class="fq-cell"><div class="fq-tag fq-retrieval">Retrieval</div><p>Coverage gaps in rare storefront configs (Spanish App Store, top sim 0.407 &lt; 0.450).</p></div>
+          <div class="fq-cell"><div class="fq-tag fq-grounding">Grounding</div><p>Cross-domain mismatches (keyboard media keys matching iTunes billing) blocked by concordance gate.</p></div>
+          <div class="fq-cell"><div class="fq-tag fq-safety">Safety</div><p>Consequential financial-loss cases (e.g. $640 flight rebooking from alarm failure) missed by keyword triggers.</p></div>
+        </div>
+      </div>
+      <div class="disclosure-block">
+        <div class="disclosure-eyebrow">Methodology Disclosure</div>
+        <blockquote class="disclosure-quote">&ldquo;70.50% is provenance-backed grounding coverage &mdash; not confirmed ticket resolution.&rdquo;</blockquote>
+        <p>SupportPilot located an auditable historical @AppleSupport interaction in the top-3 dense candidates scoring &ge; 0.450 similarity with concordant intent. There is no telemetric confirmation of permanent resolution. In operational reality, 70.50% of inquiries qualified for autonomous grounded drafting; 29.50% were safely withheld and routed to human specialists.</p>
+      </div>
+      <details class="collapsible">
+        <summary>Baseline comparison</summary>
+        <table class="data-table">
+          <thead><tr><th>Model</th><th>Intent Accuracy</th><th>Escalation Recall</th><th>Grounding Rate</th></tr></thead>
+          <tbody>
+            <tr><td>Majority class baseline</td><td>11.0%</td><td>0.0%</td><td>&mdash;</td></tr>
+            <tr><td>TF-IDF + LR (sparse)</td><td>61.5%</td><td>85.0%</td><td>23.6%</td></tr>
+            <tr class="row-highlight"><td>SupportPilot (dense + grounded)</td><td>65.50%</td><td>88.33%</td><td>70.50%</td></tr>
+          </tbody>
+        </table>
+      </details>
+      <div class="disclosure-block" style="margin-top:20px;">
+        <div class="disclosure-eyebrow">LLM-as-Judge Study</div>
+        <p>40 randomly-sampled responses scored by a human reviewer and Gemini 3.5 Flash across five dimensions. Quadratic weighted Cohen&apos;s &kappa; = <strong>0.069</strong> (pooled) &mdash; indicating weak agreement. The LLM judge is <strong>not</strong> a validated standalone quality gate.</p>
       </div>
     </section>
 
-    <!-- VIEW 1: LIVE SUPPORT OPERATIONS CONSOLE -->
-    <section id="view-console" class="view-panel active">
-      <div class="console-layout">
-        
-        <!-- Left Column: Inbound Inquiry & Ticket Dispatch Composer -->
-        <div class="console-sidebar">
-          <div class="panel ticket-composer-panel">
-            <div class="panel-header">
-              <div class="panel-header-title">
-                <span class="section-title">Inbound Customer Inquiry</span>
-                <span class="section-desc">Test customer queries against live pipeline with dense grounding</span>
-              </div>
-              <span class="badge-status-live">LIVE INFERENCE</span>
-            </div>
-
-            <!-- Queue Scenario Picker -->
-            <div class="queue-selector-group">
-              <div class="queue-selector-header">
-                <span>BENCHMARK INCIDENT SCENARIOS</span>
-              </div>
-              <div class="scenario-buttons-grid">
-                <button class="sample-chip chip-hardware" data-query="My iPhone screen is completely cracked and shattered after dropping it on the street.">
-                  <span class="chip-status-dot dot-rose"></span>
-                  <span class="chip-name">Cracked Screen</span>
-                  <span class="chip-cat">Hardware</span>
-                </button>
-                <button class="sample-chip chip-selfservice" data-query="How do I turn on low power mode on iPhone 7? My battery drains fast.">
-                  <span class="chip-status-dot dot-emerald"></span>
-                  <span class="chip-name">Battery Drain</span>
-                  <span class="chip-cat">Self-Service</span>
-                </button>
-                <button class="sample-chip chip-software" data-query="Ever since I upgraded to High Sierra, my media controls on the keyboard don't work with iTunes.">
-                  <span class="chip-status-dot dot-blue"></span>
-                  <span class="chip-name">Media Keys Issue</span>
-                  <span class="chip-cat">macOS</span>
-                </button>
-                <button class="sample-chip chip-distress" data-query="I had to make a 5:30 AM flight and my alarm didn't go off. Airline charged me $640 for rebooking!">
-                  <span class="chip-status-dot dot-amber"></span>
-                  <span class="chip-name">$640 Airline Loss</span>
-                  <span class="chip-cat">Distress</span>
-                </button>
-                <button class="sample-chip chip-security" data-query="I am locked out of my Apple ID and cannot receive 2FA verification codes.">
-                  <span class="chip-status-dot dot-purple"></span>
-                  <span class="chip-name">2FA Account Lock</span>
-                  <span class="chip-cat">Security</span>
-                </button>
-                <button class="sample-chip chip-billing" data-query="why does Apple Pay say payment not completed when I buy from the store?">
-                  <span class="chip-status-dot dot-amber"></span>
-                  <span class="chip-name">Apple Pay Error</span>
-                  <span class="chip-cat">Billing</span>
-                </button>
-              </div>
-            </div>
-
-            <!-- Ticket Text Input Form -->
-            <div class="ticket-input-area">
-              <label for="customerQueryInput" class="input-label">Customer Inquiry Message</label>
-              <textarea 
-                id="customerQueryInput" 
-                placeholder="Paste an incoming customer tweet or message (e.g. cracked display, battery depletion, Apple Pay error, iCloud lockout)..." 
-                rows="5"
-                spellcheck="false"
-              ></textarea>
-              
-              <div class="ticket-input-footer">
-                <div class="input-meta">
-                  <span id="charCount" class="mono text-muted">0 characters</span>
-                  <span class="shortcut-text"><kbd>Ctrl</kbd> + <kbd>Enter</kbd> to analyze</span>
-                </div>
-                <button id="clearBtn" class="btn-secondary" title="Clear inquiry text">Clear</button>
-              </div>
-            </div>
-
-            <!-- Primary Dispatch Action -->
-            <div class="composer-actions">
-              <button id="analyzeBtn" class="btn-primary">
-                <span class="btn-inner">
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-                  <span>Execute SupportPilot Pipeline</span>
-                </span>
-                <span class="spinner" id="analyzeSpinner"></span>
-              </button>
-            </div>
-
-            <!-- Alert Error Banner -->
-            <div id="errorBanner" class="alert-box alert-error" style="display: none;">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-              <div id="errorMessage" class="alert-text"></div>
-            </div>
-
-            <!-- Clean Stage Indicator -->
-            <div class="stage-pipeline-block">
-              <div class="stage-pipeline-header">
-                <span class="stage-title">PIPELINE EXECUTION ORDER</span>
-              </div>
-              <div class="pipeline-steps-row">
-                <div class="pipeline-step active" id="track-step-1">
-                  <span class="step-num">1</span>
-                  <span class="step-name">Query</span>
-                </div>
-                <div class="step-divider"></div>
-                <div class="pipeline-step" id="track-step-2">
-                  <span class="step-num">2</span>
-                  <span class="step-name">Intent</span>
-                </div>
-                <div class="step-divider"></div>
-                <div class="pipeline-step" id="track-step-3">
-                  <span class="step-num">3</span>
-                  <span class="step-name">Retrieval</span>
-                </div>
-                <div class="step-divider"></div>
-                <div class="pipeline-step" id="track-step-4">
-                  <span class="step-num">4</span>
-                  <span class="step-name">Grounding</span>
-                </div>
-                <div class="step-divider"></div>
-                <div class="pipeline-step" id="track-step-5">
-                  <span class="step-num">5</span>
-                  <span class="step-name">Decision</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Right Column: Primary Analysis Workspace (Hierarchy 1-6) -->
-        <div class="console-main">
-
-          <!-- 0. Empty State -->
-          <div id="emptyConsoleState" class="panel empty-state-panel">
-            <div class="empty-icon-wrap">
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-              </svg>
-            </div>
-            <h3 class="empty-heading">No Active Inquiry Under Analysis</h3>
-            <p class="empty-description">
-              Select an incident scenario from the left panel or type an incoming customer inquiry to inspect the real-time classification, dense semantic evidence retrieval, and operational routing decision.
-            </p>
-            <div class="empty-badges">
-              <span class="mono-tag">MiniLM-L6-v2 Semantic Index</span>
-              <span class="mono-tag">TF-IDF Intent Classifier</span>
-              <span class="mono-tag">Fail-Closed Safety Policy</span>
-            </div>
-          </div>
-
-          <!-- 0. Loading State -->
-          <div id="loadingConsoleState" class="panel loading-state-panel" style="display: none;">
-            <div class="loading-spinner-wrap">
-              <div class="loading-bar-spinner"></div>
-            </div>
-            <h3 class="loading-heading">Analyzing Inquiry Against Pipeline...</h3>
-            <p class="loading-description">
-              Generating dense vector query embeddings, evaluating 800 historical Apple Support conversation candidates, running keyword safety triggers, and validating intent concordance.
-            </p>
-          </div>
-
-          <!-- 1. Live Result Inspection Container -->
-          <div id="resultContainer" class="analysis-results-view" style="display: none;">
-            
-            <!-- HIERARCHY LEVEL 1 & 2: OPERATIONAL DECISION & INQUIRY CONTEXT -->
-            <div id="decisionCard" class="panel decision-hero-card">
-              <div class="decision-hero-header">
-                <div>
-                  <div class="eyebrow-label">OPERATIONAL DISPATCH DECISION</div>
-                  <div class="decision-title-row">
-                    <div id="decisionBadge" class="decision-status-pill">--</div>
-                    <span id="decisionContextPill" class="decision-context-label">--</span>
-                  </div>
-                </div>
-                <div class="confidence-stat-box">
-                  <span class="eyebrow-label">CALIBRATED CONFIDENCE</span>
-                  <div class="confidence-stat-num mono" id="confidenceScore">--</div>
-                </div>
-              </div>
-
-              <!-- Rationale Summary Text -->
-              <div class="decision-hero-body">
-                <div id="decisionRationale" class="rationale-statement"></div>
-                <div id="escalationReasonBox" class="escalation-tag-row" style="display: none;">
-                  <span class="escalation-alert-icon">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-                  </span>
-                  <span class="escalation-alert-label">Escalation Trigger:</span>
-                  <code id="escalationReasonText" class="mono escalation-code">none</code>
-                </div>
-              </div>
-            </div>
-
-            <!-- HIERARCHY LEVEL 3: PROMINENT "WHY DID SUPPORTPILOT DECIDE THIS?" AUDIT -->
-            <div id="decisionAuditBox" class="panel audit-panel">
-              <div class="panel-section-header">
-                <div class="section-title-wrap">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
-                  <h3 class="panel-sub-title">Why did SupportPilot decide this?</h3>
-                </div>
-                <span class="audit-verdict-badge" id="decisionAuditVerdict">AUDIT TRACE</span>
-              </div>
-
-              <div class="audit-grid">
-                <!-- Check 1: Intent Confidence -->
-                <div class="audit-check-card" id="auditCardConfidence">
-                  <div class="audit-check-head">
-                    <span class="audit-step-label">1. Intent Confidence Check</span>
-                    <span class="audit-status-badge mono" id="auditConfidenceCheck">--</span>
-                  </div>
-                  <div class="audit-check-detail">
-                    Predicted: <code class="mono" id="auditPredictedIntent">--</code> 
-                    (Score: <span class="mono" id="auditConfidenceScore">--</span> vs. floor <code>0.12</code>)
-                  </div>
-                </div>
-
-                <!-- Check 2: Safety Policy Guardrails -->
-                <div class="audit-check-card" id="auditCardSafety">
-                  <div class="audit-check-head">
-                    <span class="audit-step-label">2. Safety Guardrail Triggers</span>
-                    <span class="audit-status-badge mono" id="auditSafetyCheck">--</span>
-                  </div>
-                  <div class="audit-check-detail" id="auditSafetyDetail">
-                    Evaluating hardware damage, billing transactions, account security, and abusive language.
-                  </div>
-                </div>
-
-                <!-- Check 3: Intent Concordance -->
-                <div class="audit-check-card" id="auditCardConcordance">
-                  <div class="audit-check-head">
-                    <span class="audit-step-label">3. Intent Concordance Gate</span>
-                    <span class="audit-status-badge mono" id="auditConcordanceCheck">--</span>
-                  </div>
-                  <div class="audit-check-detail" id="auditConcordanceDetail">
-                    Candidate evidence intent must concordantly match predicted intent to eliminate cross-domain hallucinations.
-                  </div>
-                </div>
-
-                <!-- Check 4: Evidence Similarity Floor -->
-                <div class="audit-check-card" id="auditCardSimilarity">
-                  <div class="audit-check-head">
-                    <span class="audit-step-label">4. Dense Similarity Floor</span>
-                    <span class="audit-status-badge mono" id="auditSimilarityCheck">--</span>
-                  </div>
-                  <div class="audit-check-detail" id="auditSimilarityDetail">
-                    Candidate cosine similarity must achieve &ge; <code>0.450</code> against 800 indexed Apple conversations.
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- HIERARCHY LEVEL 4: GROUNDED RESPONSE & FIRST-CLASS SAFE ABSTENTION -->
-            <div class="panel response-panel">
-              <div class="panel-section-header">
-                <div class="section-title-wrap">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-                  <h3 class="panel-sub-title">Dispatch Response Formulation</h3>
-                </div>
-                <div class="response-header-actions">
-                  <span id="groundingBadge" class="grounding-status-pill">--</span>
-                  <button id="copyDraftBtn" class="btn-copy" title="Copy response to clipboard">
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-                    <span id="copyBtnText">Copy</span>
-                  </button>
-                </div>
-              </div>
-
-              <!-- First-Class Safe Abstention Banner (shown when abstained) -->
-              <div id="abstentionCalloutCard" class="abstention-banner" style="display: none;">
-                <div class="abstention-banner-header">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
-                  <span id="abstentionTitle" class="abstention-heading">No Safe Evidence Found &mdash; Response Withheld</span>
-                </div>
-                <p id="abstentionReasonText" class="abstention-text">
-                  The model withheld autonomous guidance because historical evidence fell below similarity thresholds or failed intent concordance checks. The ticket has been routed to human specialists rather than speculating unsupported Apple policies.
-                </p>
-              </div>
-
-              <!-- The Actual Response Text -->
-              <div class="reply-container">
-                <div class="reply-bubble-label">Agent Reply Dispatch:</div>
-                <div id="draftReplyText" class="reply-text-box"></div>
-              </div>
-
-              <!-- Attribution Box for Top Match -->
-              <div id="attributionBox" class="attribution-container" style="display: none;">
-                <div class="attribution-head">
-                  <span class="attr-tag">PROVENANCE ATTRIBUTION &bull; RANK #1</span>
-                  <span id="attrSimilarity" class="mono attr-score">--</span>
-                </div>
-                <div class="attr-meta-grid">
-                  <div class="attr-meta-col">
-                    <span class="attr-lbl">Historical Thread:</span>
-                    <span id="attrConvId" class="mono attr-val">--</span>
-                  </div>
-                  <div class="attr-meta-col">
-                    <span class="attr-lbl">Corpus Intent:</span>
-                    <span id="attrIntent" class="mono attr-val">--</span>
-                  </div>
-                </div>
-                <div class="attr-matched-query-block">
-                  <span class="attr-lbl">Historical Matched Customer Query:</span>
-                  <div id="attrMatchedQuery" class="attr-query-quote"></div>
-                </div>
-              </div>
-            </div>
-
-            <!-- HIERARCHY LEVEL 5: EVIDENCE INSPECTOR (PROVENANCE CHAIN) -->
-            <div id="evidenceInspectorBox" class="panel evidence-inspector-panel">
-              <div class="panel-section-header">
-                <div class="section-title-wrap">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
-                  <h3 class="panel-sub-title">Evidence Inspector &amp; Provenance Chain</h3>
-                </div>
-                <span class="mono-tag">Dense MiniLM-L6-v2 (Top-3)</span>
-              </div>
-
-              <!-- Step Flow Breadcrumbs -->
-              <div class="provenance-flow-bar">
-                <span class="flow-step">1. Inbound Query</span>
-                <span class="flow-arrow">&rarr;</span>
-                <span class="flow-step">2. Retrieved Candidate</span>
-                <span class="flow-arrow">&rarr;</span>
-                <span class="flow-step">3. Similarity &amp; Intent Gate</span>
-                <span class="flow-arrow">&rarr;</span>
-                <span class="flow-step">4. Historical Response</span>
-                <span class="flow-arrow">&rarr;</span>
-                <span class="flow-step">5. Grounded Dispatch</span>
-              </div>
-
-              <!-- Candidates List -->
-              <div id="evidenceList" class="evidence-cards-stream"></div>
-            </div>
-
-            <!-- HIERARCHY LEVEL 6: SUPPORTING MODEL TELEMETRY & INTENT DISTRIBUTION -->
-            <div class="panel telemetry-panel">
-              <div class="panel-section-header">
-                <div class="section-title-wrap">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-                  <h3 class="panel-sub-title">Model Telemetry &amp; Intent Distribution</h3>
-                </div>
-                <span class="mono-tag">TF-IDF + Logistic Regression</span>
-              </div>
-
-              <div class="intent-telemetry-body">
-                <div class="intent-summary-row">
-                  <div>
-                    <span class="eyebrow-label">PREDICTED INTENT</span>
-                    <div class="intent-pill-row">
-                      <span id="intentPill" class="mono intent-primary-badge">--</span>
-                      <span id="intentConfidenceTag" class="intent-prob-tag">Confidence: <strong id="confidencePct" class="mono">--</strong></span>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Confidence Track -->
-                <div class="meter-bar-track">
-                  <div id="confidenceBarFill" class="meter-bar-fill"></div>
-                </div>
-
-                <!-- Top Probabilities Grid -->
-                <div class="probabilities-section">
-                  <span class="eyebrow-label">TOP CANDIDATE PROBABILITIES</span>
-                  <div id="altIntentsList" class="probabilities-grid"></div>
-                </div>
-              </div>
-            </div>
-
-          </div>
-        </div>
+    <!-- 9. FAILURES PAGE (Where SupportPilot Still Struggles) -->
+    <section class="view" id="view-failures">
+      <div class="view-hero">
+        <div class="section-eyebrow">Engineering Post-Mortem Workspace</div>
+        <h2 class="section-heading">Where SupportPilot Still Struggles</h2>
+        <p class="section-desc">Real failure cases from the 200 human-verified benchmark analyzed as engineering post-mortems grouped by failure taxonomy: Classification, Retrieval, Safety, and Escalation.</p>
       </div>
+      <div class="philosophy-block">
+        <strong>Safety philosophy:</strong> SupportPilot follows a fail-closed design. If retrieved evidence fails semantic similarity (&ge; 0.45), intent concordance, or safety checks, the agent withholds autonomous troubleshooting and escalates to human specialists &mdash; guaranteeing 0.00% hallucinated Apple policies.
+      </div>
+      <div id="failuresList"><div class="loading-line">Loading failure post-mortems...</div></div>
     </section>
 
-    <!-- VIEW 2: EVALUATION BENCHMARK VIEW -->
-    <section id="view-evaluation" class="view-panel">
-      <div class="panel evaluation-panel-wrap">
-        <div class="view-heading-area">
-          <div class="view-badge-line">
-            <span class="section-kicker">OFFICIAL BENCHMARK AUDIT</span>
-            <span class="badge-verified">Verified by Project Author (Pravalika)</span>
-          </div>
-          <h2 class="view-main-title">Human-Verified Benchmark Evaluation</h2>
-          <p class="view-lead">
-            Exhaustive evaluation of SupportPilot AI across 200 human-verified golden evaluation records with strict zero data leakage against the 800 training conversations.
-          </p>
-        </div>
-
-        <!-- Headline Clarification Notice -->
-        <div class="alert-box alert-methodology">
-          <div class="alert-methodology-icon">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-          </div>
-          <div class="alert-methodology-content">
-            <div class="alert-methodology-title">Audited Interpretation: Attribution Coverage vs. Ticket Resolution</div>
-            <p class="alert-methodology-body">
-              The headline metric <strong>70.50% Provenance-Backed Grounding Coverage</strong> measures <em>attribution coverage</em>: the agent identifies verified Apple support records meeting both the semantic threshold (&ge; 0.45 cosine similarity) and query-evidence intent concordance.
-              <strong>70.50% does NOT mean 70.50% of customer tickets are permanently resolved.</strong> A public social customer support dataset lacks device-level telemetry to confirm whether the user's issue was resolved without subsequent contact.
-            </p>
-          </div>
-        </div>
-
-        <!-- Tripartite Comparative Benchmark Table -->
-        <div class="table-container">
-          <div class="table-title-row">
-            <h3 class="table-title">Tripartite Comparative Benchmark Matrix</h3>
-            <span class="table-caption">Comparing Heuristic Baseline &rarr; Machine-Assisted Recommendation &rarr; Human-Verified Benchmark</span>
-          </div>
-
-          <div class="table-scroll">
-            <table class="data-table">
-              <thead>
-                <tr>
-                  <th>Evaluation Dimension</th>
-                  <th>Heuristic Baseline</th>
-                  <th>Machine-Assisted Rec</th>
-                  <th>Human-Verified Benchmark</th>
-                  <th>Operational Delta</th>
-                  <th>Operational Interpretation</th>
-                </tr>
-              </thead>
-              <tbody id="benchmarkMatrixBody">
-                <!-- Dynamically populated from /api/metrics -->
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        <!-- Per-Intent Classification Performance -->
-        <div class="table-container" style="margin-top: 32px;">
-          <div class="table-title-row">
-            <h3 class="table-title">Per-Intent Classification Performance (12 Balanced Classes)</h3>
-            <span class="table-caption">Evaluated against the final human-verified golden dataset</span>
-          </div>
-
-          <div class="table-scroll">
-            <table class="data-table">
-              <thead>
-                <tr>
-                  <th>Intent Class</th>
-                  <th>Golden Support (N)</th>
-                  <th>Precision</th>
-                  <th>Recall</th>
-                  <th>F1-Score</th>
-                  <th>Relative F1 Distribution</th>
-                </tr>
-              </thead>
-              <tbody id="perIntentTableBody">
-                <!-- Dynamically populated from /api/metrics -->
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        <!-- Decision Policy Confusion Matrix -->
-        <div class="table-container" style="margin-top: 32px;">
-          <div class="table-title-row">
-            <h3 class="table-title">Decision Policy Confusion Matrix (200 Golden Cases)</h3>
-            <span class="table-caption">Autonomous dispatch (AUTO_HANDLE) vs. Precautionary routing (ESCALATE)</span>
-          </div>
-
-          <div class="cm-layout">
-            <div class="cm-card cm-card-tn">
-              <div class="cm-header">
-                <span class="cm-name">True Negatives (Safe Auto-Handle)</span>
-                <span class="cm-tag">TN</span>
-              </div>
-              <div class="cm-stat">87</div>
-              <div class="cm-desc">Routine, solvable troubleshooting inquiries automated with grounded evidence.</div>
-            </div>
-
-            <div class="cm-card cm-card-fp">
-              <div class="cm-header">
-                <span class="cm-name">False Positives (Over-Escalated)</span>
-                <span class="cm-tag">FP</span>
-              </div>
-              <div class="cm-stat">53</div>
-              <div class="cm-desc">Safely routed to human reps due to evidence insufficiency or similarity floor fallback.</div>
-            </div>
-
-            <div class="cm-card cm-card-fn">
-              <div class="cm-header">
-                <span class="cm-name">False Negatives (Missed Escalation)</span>
-                <span class="cm-tag">FN</span>
-              </div>
-              <div class="cm-stat">7</div>
-              <div class="cm-desc">High-distress cases (e.g. missed flight alarms) that avoided keyword safety triggers.</div>
-            </div>
-
-            <div class="cm-card cm-card-tp">
-              <div class="cm-header">
-                <span class="cm-name">True Positives (Accurately Caught)</span>
-                <span class="cm-tag">TP</span>
-              </div>
-              <div class="cm-stat">53</div>
-              <div class="cm-desc">Hardware damage, billing disputes, 2FA lockouts, and abusive language intercepted.</div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- VIEW 3: FAILURE & SAFETY VIEW -->
-    <section id="view-safety" class="view-panel">
-      <div class="panel safety-panel-wrap">
-        <div class="view-heading-area">
-          <div class="view-badge-line">
-            <span class="section-kicker">SAFETY AUDIT &amp; ARCHITECTURE</span>
-            <span class="badge-subtle">Fail-Closed Philosophy</span>
-          </div>
-          <h2 class="view-main-title">Failure Analysis &amp; Safety Post-Mortems</h2>
-          <p class="view-lead">
-            Enterprise customer support requires an asymmetrical loss function: an ungrounded hallucination or unauthorized policy promise is far more destructive than a precautionary human escalation.
-          </p>
-        </div>
-
-        <!-- 4 Pillars of Fail-Closed Safety -->
-        <div class="pillars-grid">
-          <div class="pillar-card">
-            <div class="pillar-index">01</div>
-            <h4 class="pillar-name">Intent Concordance</h4>
-            <p class="pillar-text">
-              Retrieved historical replies are disqualified if the corpus intent does not match the predicted customer intent, completely eliminating cross-domain hallucinations.
-            </p>
-          </div>
-
-          <div class="pillar-card">
-            <div class="pillar-index">02</div>
-            <h4 class="pillar-name">Strict Similarity Floor</h4>
-            <p class="pillar-text">
-              Any candidate scoring below 0.450 cosine similarity is rejected from autonomous dispatch, preventing tenuous or noisy keyword overlaps.
-            </p>
-          </div>
-
-          <div class="pillar-card">
-            <div class="pillar-index">03</div>
-            <h4 class="pillar-name">Context-Bound Stripping</h4>
-            <p class="pillar-text">
-              Rejects any historical response referencing private DMs, specific timestamps (&ldquo;in 10 minutes&rdquo;), personal case numbers, or ungrounded repair promises.
-            </p>
-          </div>
-
-          <div class="pillar-card">
-            <div class="pillar-index">04</div>
-            <h4 class="pillar-name">Safe Precautionary Routing</h4>
-            <p class="pillar-text">
-              When evidence is withheld or ambiguous, the agent abstains with code <code>insufficient_grounding</code> rather than speculating unsupported Apple policies.
-            </p>
-          </div>
-        </div>
-
-        <!-- Failure Investigation Cards Stream -->
-        <div class="investigation-section">
-          <div class="table-title-row">
-            <h3 class="table-title">Real Failure Cases (Investigation Cards)</h3>
-            <span class="table-caption">Deep architectural diagnosis and actionable hypotheses from the 200 human-verified benchmark</span>
-          </div>
-
-          <div id="failureCardsList" class="investigation-cards-list">
-            <!-- Dynamically populated from /api/failures as investigation cards -->
-          </div>
-        </div>
-      </div>
-    </section>
   </main>
+</div>
 
-  <!-- Enterprise Footer -->
-  <footer class="app-footer">
-    <div class="footer-inner">
-      <div class="footer-left">
-        <span class="footer-status-bullet"></span>
-        <span>SupportPilot AI &mdash; Enterprise Customer Support Operations Console</span>
-      </div>
-      <div class="footer-right">
-        <span>Verified by Project Author (Pravalika)</span>
-        <span class="footer-sep">&bull;</span>
-        <span>Zero Data Leakage Isolation</span>
-        <span class="footer-sep">&bull;</span>
-        <span>FastAPI + Dense MiniLM-L6-v2</span>
+<!-- SYSTEM DETAILS MODAL -->
+<div class="modal-backdrop" id="modalBackdrop" style="display:none;">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-header">
+      <h2 class="modal-title" id="modalTitle">System Details</h2>
+      <button class="modal-close" id="modalClose" aria-label="Close">
+        <svg viewBox="0 0 16 16" fill="none" width="16" height="16">
+          <path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="sys-grid">
+        <div class="sys-row"><span class="sys-key">Intent model</span><span class="sys-val">TF-IDF + Logistic Regression</span></div>
+        <div class="sys-row"><span class="sys-key">Retriever</span><span class="sys-val mono">MiniLM-L6-v2</span></div>
+        <div class="sys-row"><span class="sys-key">Grounding threshold</span><span class="sys-val mono">0.45</span></div>
+        <div class="sys-row"><span class="sys-key">Confidence threshold</span><span class="sys-val mono">0.12</span></div>
+        <div class="sys-row"><span class="sys-key">Golden benchmark</span><span class="sys-val">200 human-verified cases</span></div>
+        <div class="sys-row"><span class="sys-key">Retrieval corpus</span><span class="sys-val">800 threads</span></div>
+        <div class="sys-row"><span class="sys-key">Leakage</span><span class="sys-val">0 shared IDs</span></div>
+        <div class="sys-row"><span class="sys-key">LLM judge</span><span class="sys-val">Gemini 3.5 Flash (40-example validation study)</span></div>
+        <div class="sys-row"><span class="sys-key">Human vs LLM &kappa;</span><span class="sys-val mono">0.069 pooled</span></div>
+        <div class="sys-row"><span class="sys-key">Weak agreement</span><span class="sys-val text-warning">Human oversight required</span></div>
+        <div class="sys-row"><span class="sys-key">Safety policy</span><span class="sys-val">Fail-closed abstention</span></div>
       </div>
     </div>
-  </footer>
+  </div>
+</div>
 
-  <!-- Toast Notification -->
-  <div id="toastNotification" class="toast-card" style="display: none;"></div>
-
-  <script src="/static/app.js"></script>
+<script src="/static/app.js"></script>
 </body>
 </html>
